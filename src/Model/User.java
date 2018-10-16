@@ -35,7 +35,7 @@ public class User
 	 * Returns User id
 	 * @return
 	 */
-	public int getAppointmentsID() {
+	public int getId() {
 		return appointmentsID;
 	}
 
@@ -43,7 +43,7 @@ public class User
 	 * Sets user id
 	 * @param id
 	 */
-	public void setAppointmentsID(int id) {
+	public void setID(int id) {
 		appointmentsID = id;
 	}
 
