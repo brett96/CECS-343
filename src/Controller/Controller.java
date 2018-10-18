@@ -1,6 +1,7 @@
 package Controller;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -14,8 +15,8 @@ public final class Controller
 	private static Controller controller;
 	private static final String DB_NAME = "cecs343.db";
 	private static final String USER_TABLE_NAME = "users";
-    private static final String[] USER_FIELD_NAMES = {"name", "email", "password", "appointmentsID"};
-    private static final String[] USER_FIELD_TYPES = {"TEXT", "TEXT PRIMARY KEY", "TEXT", "INTEGER"};
+    private static final String[] USER_FIELD_NAMES = {"appointmentsID", "name", "email", "password", "birthYear", "birthMonth", "birthDay"};
+    private static final String[] USER_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT PRIMARY KEY", "TEXT", "INTEGER", "INTEGER", "INTEGER"};
     
     private static final String APPOINTMENTS_TABLE_NAME = "appointments";
     private static final String[] APPOINTMENTS_FIELD_NAMES = {"appointmentsID", "appointmentName", "appointmentDate",
@@ -43,10 +44,13 @@ public final class Controller
             	ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getAllRecords();
             	for(ArrayList<String> values : resultsList)
             	{
-            		String name = values.get(0);
-            		String email = values.get(1);
-            		int appointmentsID = Integer.parseInt(values.get(2));
-            		controller.allUsersList.add(new User(name, email, appointmentsID));
+            		int appointmentsID = Integer.parseInt(values.get(0));
+            		String name = values.get(1);
+            		String email = values.get(2);
+            		int year = Integer.parseInt(values.get(4));
+            		int month = Integer.parseInt(values.get(5));
+            		int day = Integer.parseInt(values.get(6));
+            		controller.allUsersList.add(new User(name, email, appointmentsID , year, month, day));
             	}
             	
             	controller.DB = new DBModel(DB_NAME, USER_TABLE_NAME, USER_FIELD_NAMES, USER_FIELD_TYPES);
@@ -104,7 +108,7 @@ public final class Controller
 				try 
 				{
 					ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getRecord(String.valueOf(u.getId()));
-					String storedPassword = resultsList.get(0).get(2);
+					String storedPassword = resultsList.get(0).get(3);
 					if (password.equals(storedPassword))
 					{
 						this.currentUser = u;
@@ -133,7 +137,7 @@ public final class Controller
 				try 
 				{
 					ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getRecord(String.valueOf(u.getId()));
-					String storedPassword = resultsList.get(0).get(2);
+					String storedPassword = resultsList.get(0).get(3);
 					if (password.equals(storedPassword))
 					{
 						this.currentUser = u;
@@ -148,6 +152,49 @@ public final class Controller
 		return "Email address not found.  Please try again.";
 	}
     
+    public String resetPassword(String newPass, String email, LocalDate birthday)
+    {
+    	try
+    	{
+	    	if(currentUser != null)
+	    	{
+	    		controller.getUsersDB().changePassword(currentUser.getEmail(), newPass);
+	    		return "SUCCESS";
+	    	}
+	    	else
+	    	{
+	    		for(User u : controller.allUsersList)
+	        	{
+	        		if(u.getEmail().equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
+	        		{
+	        			controller.getUsersDB().changePassword(email, newPass);
+	        			return "SUCCESS";
+	        		}
+	        	}
+	    	}
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	return "FAILED";
+    }
+    
+//    public boolean verifyOwner(String email, LocalDate birthday)
+//    {
+//    	if(currentUser != null)
+//    		return true;
+//    	else
+//    	{
+//    		for(User u : controller.allUsersList)
+//        	{
+//        		if(u.getEmail().equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
+//        			return true;
+//        	}
+//    	}
+//    	return false;
+//    }
+    
     /**
      * Signs up a user and adds user data to appropriate tables
      * @param name
@@ -155,18 +202,18 @@ public final class Controller
      * @param password
      * @return
      */
-    public String signUpUser(String name, String email, String password)
+    public String signUpUser(String name, String email, String password, int year, int month, int day)
     {
     	for(User user : controller.allUsersList)
     		if(user.getEmail().equalsIgnoreCase(email))
     			return "Email already exists";
     	// Add user to database
-    	String[] values = {name, email, password};
+    	String[] values = {name, email, password, Integer.toString(year), Integer.toString(month), Integer.toString(day)};
     	try
     	{
     		int id = controller.getUsersDB().createRecord(Arrays.copyOfRange
     				(USER_FIELD_NAMES, 1, USER_FIELD_NAMES.length), values);
-    		User newUser = new User(name, email, id);
+    		User newUser = new User(name, email, id, year, month, day);
     		controller.allUsersList.add(newUser);
     		controller.currentUser = newUser;
     		return "SUCCESS";
@@ -176,6 +223,8 @@ public final class Controller
     		return "Account not created.  Please try again.";
     	}
     }
+    
+    
     
     /**
      * Returns ObservableList of all user data

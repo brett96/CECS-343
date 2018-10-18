@@ -1,19 +1,24 @@
 package Model;
 
+import java.time.LocalDate;
+
 public class User 
 {
 	private String name;
 	private String email;
 	private int appointmentsID;
+	private LocalDate birthday;
 	
 	/**
 	 * Default User constructor
+	 * TODO:  Add birthday, username separate from email
 	 */
 	public User()
 	{
 		appointmentsID = 0;
 		name = null;
 		email = null;
+		birthday = LocalDate.of(2000, 01, 01);
 	}
 	
 	/**
@@ -22,12 +27,13 @@ public class User
 	 * @param name
 	 * @param email
 	 */
-	public User(String name, String email, int id)
+	public User(String name, String email, int id, int year, int month, int day)
 	{
 		super();
 		this.name = name;
 		this.email = email;
 		this.appointmentsID = id;
+		this.birthday = LocalDate.of(year, month, day);
 	}
 	
 
@@ -35,7 +41,8 @@ public class User
 	 * Returns User id
 	 * @return
 	 */
-	public int getId() {
+	public int getId() 
+	{
 		return appointmentsID;
 	}
 
@@ -45,6 +52,11 @@ public class User
 	 */
 	public void setID(int id) {
 		appointmentsID = id;
+	}
+	
+	public LocalDate getBirthday()
+	{
+		return birthday;
 	}
 
 	/**

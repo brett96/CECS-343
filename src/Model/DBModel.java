@@ -148,6 +148,17 @@ public class DBModel
         return true;
     }
 
+    public void changePassword(String email, String pass) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE users SET password = ").append(pass);
+//    	for(int i = 0; i < fields.length; i++)
+//    	{
+//    		updateSQL.append(fields[i]).append("=").append(convertToSQLText(fields[i], values[i])).append((i < values.length - 1) ? "," : " ");
+//    	}
+    	updateSQL.append("WHERE email = ").append(email);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
     /**
      * Deletes all records
      * @throws SQLException
