@@ -29,8 +29,15 @@ public final class Controller
     private DBModel usersDB;
     private DBModel userAppointmentsDB;
     
+    /**
+     * Singleton
+     */
     private Controller() {}
     
+    /**
+     * Initializes controller if set to null
+     * @return
+     */
     public static Controller getInstance()
     {
     	if(controller == null)
@@ -152,6 +159,50 @@ public final class Controller
 		return "Email address not found.  Please try again.";
 	}
     
+    /**
+     * If a user is already signed in, the passed parameters are not checked
+     * @param newName
+     * @param email
+     * @param birthday
+     * @return
+     */
+    public String resetName(String newName, String email, LocalDate birthday)
+    {
+    	try
+    	{
+    		if(currentUser != null)
+    		{
+    			controller.getUsersDB().changeName(currentUser.getEmail(), newName);
+    			currentUser.setName(newName);
+    			return "SUCCESS";
+    		}
+    		else
+    		{
+    			for(User u : controller.allUsersList)
+    			{
+    				if(u.getEmail().equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
+    				{
+    					controller.getUsersDB().changeName(email, newName);
+    					u.setName(newName);
+    					return "SUCCESS";
+    				}
+    			}
+    		}
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	return "FAILED";
+    }
+    
+    /**
+     * If user already signed in, parameters not verified & assumed true
+     * @param newPass
+     * @param email
+     * @param birthday
+     * @return
+     */
     public String resetPassword(String newPass, String email, LocalDate birthday)
     {
     	try
@@ -177,6 +228,43 @@ public final class Controller
     	{
     		e.printStackTrace();
     	}
+    	return "FAILED";
+    }
+    
+    /**
+     * Checks if newEmail is being used by another user.  If not, user validation attempted, and email updated if passed
+     * @param email
+     * @param newEmail
+     * @param birthday
+     * @return
+     */
+    public String resetEmail(String email, String newEmail, LocalDate birthday)
+    {
+    	try
+    	{
+    		boolean validUser = false;
+    		
+    		for(User u : controller.allUsersList)
+    		{
+    			// Check if email is associated w/ user.  Can't have same email b/c email is primary key
+    			if(u.getEmail().equalsIgnoreCase(newEmail))
+    				return "email already exists";
+    			
+    			// Validate user if email and birthday match given email and birthday
+    			if(u.getEmail().equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
+    				validUser = true;
+    		}
+    		
+    		// If loop exited, email can be updated if user has been validated
+    		if(validUser)
+    		{
+    			controller.getUsersDB().changeEmail(email, newEmail);
+    			currentUser.setEmail(newEmail);
+    			return "SUCCESS";
+    		}
+    		
+    	}
+    	catch(Exception e) {e.printStackTrace();}
     	return "FAILED";
     }
     

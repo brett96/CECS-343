@@ -159,6 +159,20 @@ public class DBModel
     	mStmt.executeUpdate(updateSQL.toString());
     }
     
+    public void changeName(String email, String name) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE users SET name = ").append(name);
+    	updateSQL.append("WHERE email = ").append(email);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
+    public void changeEmail(String email, String newEmail) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE users SET email = ").append(newEmail);
+    	updateSQL.append("WHERE email = ").append(email);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
     /**
      * Deletes all records
      * @throws SQLException
