@@ -32,7 +32,7 @@ public class DBModel
     }
     
     private void createTable() throws SQLException {
-    	//mStmt.executeUpdate("DROP TABLE IF EXISTS " + mTableName);	//  Deletes and repopulates the database
+    	mStmt.executeUpdate("DROP TABLE IF EXISTS " + mTableName);	//  Deletes and repopulates the database
         StringBuilder createSQL = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         createSQL.append(mTableName).append("(");
         for (int i = 0; i < mFieldNames.length; i++)

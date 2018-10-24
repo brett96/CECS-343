@@ -1,12 +1,18 @@
+package View;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
+
+import Controller.Controller;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.JOptionPane;
 
 public class CalendarProgram{
+	static Controller controller = Controller.getInstance();
     static JLabel lblMonth, lblYear;
     static JButton btnPrev, btnNext;
     static JTable tblCalendar;
@@ -48,10 +54,13 @@ public class CalendarProgram{
         		username = JOptionPane.showInputDialog("Enter a username:");
         		password = JOptionPane.showInputDialog("Enter a password:");
         		email = JOptionPane.showInputDialog("Enter an email:");
+        		email = "'" + email + "'";
         		age = JOptionPane.showInputDialog("Enter your age:");
         		bYear = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth year:"));
-        		bYear = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
-        		bYear = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
+        		bMonth = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
+        		bDay = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
+        		System.out.println(controller.signUpUser(username, email, password, bYear, bMonth, bDay));
+        		
         
         	}
         });

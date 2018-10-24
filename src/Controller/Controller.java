@@ -308,11 +308,11 @@ public final class Controller
     	}
     	catch(SQLException e)
     	{
-    		return "Account not created.  Please try again.";
+    		e.printStackTrace();
+    		return "Account Not Created";
     	}
+    	
     }
-    
-    
     
     /**
      * Returns ObservableList of all user data
