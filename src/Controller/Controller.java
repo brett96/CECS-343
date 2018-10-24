@@ -110,7 +110,10 @@ public final class Controller
     public User signIn(String email, String password)
     {
     	for (User u : controller.allUsersList)
-			if (u.getEmail().equalsIgnoreCase(email))
+    	{
+    		String userEmail = u.getEmail();
+			userEmail = "'" + userEmail + "'";
+			if (userEmail.equalsIgnoreCase(email))
 			{
 				try 
 				{
@@ -128,6 +131,7 @@ public final class Controller
 					e.printStackTrace();
 				}
 			}
+    	}
     	return null;
     }
     
@@ -139,7 +143,10 @@ public final class Controller
      */
     public String signInUser(String email, String password) {
 		for (User u : controller.allUsersList)
-			if (u.getEmail().equalsIgnoreCase(email))
+		{
+			String userEmail = u.getEmail();
+			userEmail = "'" + userEmail + "'";
+			if (userEmail.equalsIgnoreCase(email))
 			{
 				try 
 				{
@@ -158,7 +165,8 @@ public final class Controller
 					return "There was an error";
 				}
 				return "Incorrect password.  Please try again.";		
-			}		
+			}	
+		}
 		return "Email address not found.  Please try again.";
 	}
     
@@ -183,10 +191,14 @@ public final class Controller
     		{
     			for(User u : controller.allUsersList)
     			{
-    				if(u.getEmail().equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
+    				String userEmail = u.getEmail();
+	    			userEmail = "'" + userEmail + "'";
+    				if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
     				{
+    					//System.out.println("email = " + email + "; newName = " + newName);
     					controller.getUsersDB().changeName(email, newName);
     					u.setName(newName);
+    					System.out.println(controller.getUsersDB().getRecord(String.valueOf(u.getId()))); 
     					return "SUCCESS";
     				}
     			}
@@ -212,16 +224,20 @@ public final class Controller
     	{
 	    	if(currentUser != null)
 	    	{
-	    		controller.getUsersDB().changePassword(currentUser.getEmail(), newPass);
+	    		controller.getUsersDB().changePassword(email, newPass);
 	    		return "SUCCESS";
 	    	}
 	    	else
 	    	{
 	    		for(User u : controller.allUsersList)
 	        	{
-	        		if(u.getEmail().equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
+	    			//System.out.println("u.getEmail() = " + u.getEmail() + "; email = " + email);
+	    			String userEmail = u.getEmail();
+	    			userEmail = "'" + userEmail + "'";
+	        		if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
 	        		{
 	        			controller.getUsersDB().changePassword(email, newPass);
+	        	    	//System.out.println(controller.getUsersDB().getRecord(String.valueOf(u.getId())));    	
 	        			return "SUCCESS";
 	        		}
 	        	}
@@ -230,6 +246,7 @@ public final class Controller
     	catch(Exception e)
     	{
     		e.printStackTrace();
+    		System.out.println("ERROR");
     	}
     	return "FAILED";
     }
@@ -296,8 +313,12 @@ public final class Controller
     public String signUpUser(String name, String email, String password, int year, int month, int day)
     {
     	for(User user : controller.allUsersList)
-    		if(user.getEmail().equalsIgnoreCase(email))
+    	{
+    		String userEmail = user.getEmail();
+			userEmail = "'" + userEmail + "'";
+    		if(userEmail.equalsIgnoreCase(email))
     			return "Email already exists";
+    	}
     	// Add user to database
     	String[] values = {name, email, password, Integer.toString(year), Integer.toString(month), Integer.toString(day)};
     	try

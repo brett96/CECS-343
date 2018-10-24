@@ -153,26 +153,28 @@ public class DBModel
 
     public void changePassword(String email, String pass) throws SQLException
     {
-    	StringBuilder updateSQL = new StringBuilder("UPDATE users SET password = ").append(pass);
+    	StringBuilder updateSQL = new StringBuilder("UPDATE users SET password = ").append("'" + pass + "'");
 //    	for(int i = 0; i < fields.length; i++)
 //    	{
 //    		updateSQL.append(fields[i]).append("=").append(convertToSQLText(fields[i], values[i])).append((i < values.length - 1) ? "," : " ");
 //    	}
-    	updateSQL.append("WHERE email = ").append(email);
+    	updateSQL.append(" WHERE email = ").append(email);
+    	//System.out.println(updateSQL);
     	mStmt.executeUpdate(updateSQL.toString());
     }
     
     public void changeName(String email, String name) throws SQLException
     {
-    	StringBuilder updateSQL = new StringBuilder("UPDATE users SET name = ").append(name);
-    	updateSQL.append("WHERE email = ").append(email);
+    	StringBuilder updateSQL = new StringBuilder("UPDATE users SET name = ").append("'" + name + "'");
+    	updateSQL.append(" WHERE email = ").append(email);
+    	System.out.println(updateSQL);
     	mStmt.executeUpdate(updateSQL.toString());
     }
     
     public void changeEmail(String email, String newEmail) throws SQLException
     {
     	StringBuilder updateSQL = new StringBuilder("UPDATE users SET email = ").append(newEmail);
-    	updateSQL.append("WHERE email = ").append(email);
+    	updateSQL.append(" WHERE email = ").append(email);
     	mStmt.executeUpdate(updateSQL.toString());
     }
     

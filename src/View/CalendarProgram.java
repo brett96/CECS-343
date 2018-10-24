@@ -8,6 +8,7 @@ import Controller.Controller;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.time.LocalDate;
 import java.util.*;
 import javax.swing.JOptionPane;
 
@@ -67,23 +68,57 @@ public class CalendarProgram{
         });
         accountMenu.add(createAccountButton);
         
-        JMenuItem changeUsername = new JMenuItem(new AbstractAction("change username") {
+        JMenuItem loginButton = new JMenuItem(new AbstractAction("Login") {
         	public void actionPerformed(ActionEvent e) {
-        		System.out.println("changeUsername");
+        		String username, password, email;
+        		int bDay, bMonth, bYear;
+        		email = JOptionPane.showInputDialog("Enter your email:");
+        		email = "'" + email + "'";
+        		password = JOptionPane.showInputDialog("Enter your password:");
+        		System.out.println(controller.signInUser(email, password));
+        		//System.out.println(controller.signInUser(email, password));
+        		
+        
+        	}
+        });
+        accountMenu.add(loginButton);
+        
+        JMenuItem changeUsername = new JMenuItem(new AbstractAction("change username") {
+        	public void actionPerformed(ActionEvent e) 
+        	{
+        		String email = JOptionPane.showInputDialog("Enter your email: ");
+        		email = "'" + email + "'";
+        		int year = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth year:"));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
+        		String newName = JOptionPane.showInputDialog("Enter Your New Name: ");	
+        		LocalDate birthday = LocalDate.of(year, month, day);
+        		System.out.println(controller.resetName(newName, email, birthday));
+        		//System.out.println("changeUsername");
         	}
         });
         accountMenu.add(changeUsername);
         
         JMenuItem changePassword = new JMenuItem(new AbstractAction("change password") {
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("changePassword");
+        	public void actionPerformed(ActionEvent e) 
+        	{
+        		String email = JOptionPane.showInputDialog("Enter your email: ");
+        		email = "'" + email + "'";
+        		int year = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth year:"));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
+        		String newPass = JOptionPane.showInputDialog("Enter Your New Password: ");	
+        		LocalDate birthday = LocalDate.of(year, month, day);
+        		System.out.println(controller.resetPassword(newPass, email, birthday));
         	}
         });
         accountMenu.add(changePassword);
         
-        JMenuItem changeUserInformation = new JMenuItem(new AbstractAction("change user information") {
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("changeUserInformation");
+        JMenuItem changeUserInformation = new JMenuItem(new AbstractAction("change user information") 
+        {
+        	public void actionPerformed(ActionEvent e) 
+        	{
+        		System.out.println("Change User Information");
         	}
         });
         accountMenu.add(changeUserInformation);
