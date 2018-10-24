@@ -32,7 +32,7 @@ public class DBModel
     }
     
     private void createTable() throws SQLException {
-    	mStmt.executeUpdate("DROP TABLE IF EXISTS " + mTableName);	//  Deletes and repopulates the database
+    	//mStmt.executeUpdate("DROP TABLE IF EXISTS " + mTableName);	//  Deletes and repopulates the database
         StringBuilder createSQL = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         createSQL.append(mTableName).append("(");
         for (int i = 0; i < mFieldNames.length; i++)
@@ -120,6 +120,9 @@ public class DBModel
             insertSQL.append(convertToSQLText(fields[i], values[i])).append((i < values.length - 1) ? "," : ")");
 
         mStmt.executeUpdate(insertSQL.toString());
+        StringBuilder updateSQL = new StringBuilder("UPDATE users SET appointmentsID = ").append(mStmt.getGeneratedKeys().getInt(1));
+        updateSQL.append(" WHERE email = ").append(values[1]);
+        mStmt.executeUpdate(updateSQL.toString());
         // Minor change in createRecord to return the newly generated primary key (as an int)
         return mStmt.getGeneratedKeys().getInt(1);
     }

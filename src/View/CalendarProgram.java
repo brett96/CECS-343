@@ -60,6 +60,7 @@ public class CalendarProgram{
         		bMonth = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
         		bDay = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
         		System.out.println(controller.signUpUser(username, email, password, bYear, bMonth, bDay));
+        		//System.out.println(controller.signInUser(email, password));
         		
         
         	}

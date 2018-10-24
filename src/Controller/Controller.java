@@ -148,12 +148,15 @@ public final class Controller
 					if (password.equals(storedPassword))
 					{
 						this.currentUser = u;
-						return "SUCCESS";
+						return "SIGNED IN";
 					}
 						
 						
 				} 
-				catch (Exception e) {return "Error";}
+				catch (Exception e) {
+					e.printStackTrace();
+					return "There was an error";
+				}
 				return "Incorrect password.  Please try again.";		
 			}		
 		return "Email address not found.  Please try again.";
