@@ -260,6 +260,12 @@ public class CalendarProgram{
             String headers = "Week View"; //All headers
             mtblCalendar.addColumn(headers);
         }   
+        else if (boolDayView == true)
+        {
+            
+            String headers = "Day View"; //All headers
+            mtblCalendar.addColumn(headers);
+        }   
         
         tblCalendar.getParent().setBackground(tblCalendar.getBackground()); //Set background
         
@@ -278,13 +284,20 @@ public class CalendarProgram{
         if (boolMonthView == true)
         {
         	mtblCalendar.setColumnCount(7);
+        	mtblCalendar.setRowCount(6);
         }
         else if (boolWeekView == true)
         {
             mtblCalendar.setColumnCount(1);
+            mtblCalendar.setRowCount(4);
         }   
+        else if (boolDayView == true)
+        {
+            mtblCalendar.setColumnCount(1);
+            mtblCalendar.setRowCount(1);
+        }  
         
-        mtblCalendar.setRowCount(6);
+       
         
         //Populate table
         for (int i=realYear-100; i<=realYear+100; i++){
@@ -302,12 +315,24 @@ public class CalendarProgram{
         
         if (boolMonthView == true)
         {
-        	mtblCalendar.setColumnCount(7);
+        	
+        	mtblCalendar.setColumnCount(0);
+            String[] headers = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}; //All headers
+            for (int i=0; i<7; i++){
+                mtblCalendar.addColumn(headers[i]);
+            }
+            
         }
         else if (boolWeekView == true)
         {
-            mtblCalendar.setColumnCount(1);
+            mtblCalendar.setColumnCount(0);
+            mtblCalendar.addColumn("week view");
         }   
+        else if (boolDayView == true)
+        {
+            mtblCalendar.setColumnCount(0);
+            mtblCalendar.addColumn("day view");
+        }  
         
         //Allow/disallow buttons
         btnPrev.setEnabled(true);
@@ -334,6 +359,13 @@ public class CalendarProgram{
                     mtblCalendar.setValueAt(null, i, 0);
             }
         }
+        else if (boolDayView == true)
+        {
+            //Clear table
+            for (int i=0; i<6; i++){
+                    mtblCalendar.setValueAt(null, i, 0);
+            }
+        }
 
         //Get first day of month and number of days
         GregorianCalendar cal = new GregorianCalendar(year, month, 1);
@@ -353,6 +385,14 @@ public class CalendarProgram{
         {
             //Draw calendar week view
             for (int i=1; i<5; i++){
+                int column  = 0;
+                mtblCalendar.setValueAt(i, i, column);
+            }
+        }
+        else if (boolDayView == true)
+        {
+            //Draw calendar week view
+            for (int i=1; i<2; i++){
                 int column  = 0;
                 mtblCalendar.setValueAt(i, i, column);
             }
