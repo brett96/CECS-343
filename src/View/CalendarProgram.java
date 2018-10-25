@@ -118,7 +118,15 @@ public class CalendarProgram{
         {
         	public void actionPerformed(ActionEvent e) 
         	{
-        		System.out.println("Change User Information");
+        		String email = JOptionPane.showInputDialog("Enter your current email: ");
+        		email = "'" + email + "'";
+        		int year = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth year:"));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
+        		LocalDate birthday = LocalDate.of(year, month, day);
+        		String newEmail = JOptionPane.showInputDialog("Enter your new email: ");
+        		newEmail = "'" + newEmail + "'";
+        		System.out.println(controller.resetEmail(email, newEmail, birthday));
         	}
         });
         accountMenu.add(changeUserInformation);

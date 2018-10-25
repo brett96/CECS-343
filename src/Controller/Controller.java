@@ -266,13 +266,19 @@ public final class Controller
     		
     		for(User u : controller.allUsersList)
     		{
+    			String userEmail = u.getEmail();
+    			userEmail = "'" + userEmail + "'";
     			// Check if email is associated w/ user.  Can't have same email b/c email is primary key
-    			if(u.getEmail().equalsIgnoreCase(newEmail))
-    				return "email already exists";
+    			if(userEmail.equalsIgnoreCase(newEmail))
+    				return "Email already exists";
     			
+    			System.out.println("userEmail = " + userEmail + "; email = " + email);
     			// Validate user if email and birthday match given email and birthday
-    			if(u.getEmail().equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
+    			if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
+    			{
     				validUser = true;
+    				currentUser = u;
+    			}
     		}
     		
     		// If loop exited, email can be updated if user has been validated
@@ -284,7 +290,11 @@ public final class Controller
     		}
     		
     	}
-    	catch(Exception e) {e.printStackTrace();}
+    	catch(Exception e) 
+    	{
+    		e.printStackTrace();
+    		return "ERROR";
+    	}
     	return "FAILED";
     }
     
