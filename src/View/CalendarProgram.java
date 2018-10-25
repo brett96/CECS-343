@@ -114,24 +114,48 @@ public class CalendarProgram{
         });
         accountMenu.add(changePassword);
         
-        JMenuItem changeUserInformation = new JMenuItem(new AbstractAction("change user information") 
+        JMenuItem changeUserInformation = new JMenuItem(new AbstractAction("change email") 
         {
         	public void actionPerformed(ActionEvent e) 
         	{
-        		String email = JOptionPane.showInputDialog("Enter your current email: ");
+        		String email = JOptionPane.showInputDialog(accountMenu, "Enter your current email: ", "Current Email", JOptionPane.QUESTION_MESSAGE);
         		email = "'" + email + "'";
-        		int year = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth year:"));
-        		int month = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
-        		int day = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
+        		int year = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth year:", "Birth Year", JOptionPane.QUESTION_MESSAGE));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth month:", "Birth Month", JOptionPane.QUESTION_MESSAGE));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth day:", "Birth Day", JOptionPane.QUESTION_MESSAGE));
         		LocalDate birthday = LocalDate.of(year, month, day);
-        		String newEmail = JOptionPane.showInputDialog("Enter your new email: ");
+        		String newEmail = JOptionPane.showInputDialog(accountMenu, "Enter your new email: ", "New Email", JOptionPane.QUESTION_MESSAGE);
         		newEmail = "'" + newEmail + "'";
+        		//LocalDate newBirthday = LocalDate.of(newYear, newMonth, newDay);
         		System.out.println(controller.resetEmail(email, newEmail, birthday));
         	}
         });
-        accountMenu.add(changeUserInformation);
+        //accountMenu.add(changeUserInformation);
+        
+        
         
         menubar.add(accountMenu);
+        
+        //Change Birthday
+        JMenu birthdayMenu = new JMenu("Change User Information");
+        JMenuItem changeBirthday = new JMenuItem(new AbstractAction("Change Birthday") {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		String email = JOptionPane.showInputDialog(accountMenu, "Enter your current email: ", "Current Email", JOptionPane.QUESTION_MESSAGE);
+        		email = "'" + email + "'";
+        		int year = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth year:", "Birth Year", JOptionPane.QUESTION_MESSAGE));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth month:", "Birth Month", JOptionPane.QUESTION_MESSAGE));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth day:", "Birth Day", JOptionPane.QUESTION_MESSAGE));
+        		LocalDate birthday = LocalDate.of(year, month, day);
+        		int newYear = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your new birth year: ", "New Birth Year", JOptionPane.QUESTION_MESSAGE));
+        		int newMonth = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your new birth month", "New Month", JOptionPane.QUESTION_MESSAGE));
+        		int newDay = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your new birth day", "New Day", JOptionPane.QUESTION_MESSAGE));
+        		System.out.println(controller.resetBirthday(email, birthday, newYear, newMonth, newDay));
+        	}
+        });
+        birthdayMenu.add(changeBirthday);
+        birthdayMenu.add(changeUserInformation);
+        accountMenu.add(birthdayMenu);
         
         //create appointment menu
         JMenu appointmentMenu = new JMenu("appointment");

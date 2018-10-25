@@ -178,6 +178,14 @@ public class DBModel
     	mStmt.executeUpdate(updateSQL.toString());
     }
     
+    public void changeBirthday(String email, int year, int month, int day) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE users SET birthYear = ").append(year);
+    	updateSQL.append(", birthMonth = ").append(month).append(", birthDay = ").append(day);
+    	updateSQL.append(" WHERE email = ").append(email);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
     /**
      * Deletes all records
      * @throws SQLException

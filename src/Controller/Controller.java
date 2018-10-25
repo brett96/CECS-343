@@ -234,6 +234,7 @@ public final class Controller
 	    			//System.out.println("u.getEmail() = " + u.getEmail() + "; email = " + email);
 	    			String userEmail = u.getEmail();
 	    			userEmail = "'" + userEmail + "'";
+	    			System.out.println("u.getBirthday() = " + u.getBirthday().toString() + "; birthday = " + birthday.toString());
 	        		if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
 	        		{
 	        			controller.getUsersDB().changePassword(email, newPass);
@@ -272,7 +273,7 @@ public final class Controller
     			if(userEmail.equalsIgnoreCase(newEmail))
     				return "Email already exists";
     			
-    			System.out.println("userEmail = " + userEmail + "; email = " + email);
+    			//System.out.println("userEmail = " + userEmail + "; email = " + email);
     			// Validate user if email and birthday match given email and birthday
     			if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
     			{
@@ -295,6 +296,40 @@ public final class Controller
     		e.printStackTrace();
     		return "ERROR";
     	}
+    	return "FAILED";
+    }
+    
+    public String resetBirthday(String email, LocalDate currentBDay, int year, int month, int day)
+    {
+    	try
+    	{
+	    	if(currentUser != null)
+	    	{
+	    		controller.getUsersDB().changeBirthday(email, year, month, day);
+	    		return "SUCCESS";
+	    	}
+	    	else
+	    	{
+	    		for(User u : controller.allUsersList)
+	        	{
+	    			//System.out.println("u.getEmail() = " + u.getEmail() + "; email = " + email);
+	    			String userEmail = u.getEmail();
+	    			userEmail = "'" + userEmail + "'";
+	        		if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(currentBDay))
+	        		{
+	        			controller.getUsersDB().changeBirthday(email, year, month, day);
+	        	    	//System.out.println(controller.getUsersDB().getRecord(String.valueOf(u.getId())));    	
+	        			return "SUCCESS";
+	        		}
+	        	}
+	    	}
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    		System.out.println("ERROR");
+    	}
+    	
     	return "FAILED";
     }
     
