@@ -38,7 +38,7 @@ public class CalendarProgram{
         
         //Prepare frame
         frmMain = new JFrame ("Calendar"); //Create frame
-        frmMain.setSize(330, 375); //Set size to 400x400 pixels
+        frmMain.setSize(400, 400); //Set size to 400x400 pixels
         pane = frmMain.getContentPane(); //Get content pane
         pane.setLayout(null); //Apply null layout
         frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Close when X is clicked
@@ -48,18 +48,18 @@ public class CalendarProgram{
         //create account menu
         JMenu accountMenu = new JMenu("account");
         
-        JMenuItem createAccountButton = new JMenuItem(new AbstractAction("create user account") {
+        JMenuItem createAccountButton = new JMenuItem(new AbstractAction("Create Account") {
         	public void actionPerformed(ActionEvent e) {
         		String username, password, email, age;
         		int bDay, bMonth, bYear;
-        		username = JOptionPane.showInputDialog("Enter a username:");
-        		password = JOptionPane.showInputDialog("Enter a password:");
-        		email = JOptionPane.showInputDialog("Enter an email:");
+        		username = JOptionPane.showInputDialog(pnlCalendar, "Enter a username:", "Create Account", JOptionPane.QUESTION_MESSAGE);
+        		password = JOptionPane.showInputDialog(pnlCalendar, "Enter a password:", "Create Account", JOptionPane.QUESTION_MESSAGE);
+        		email = JOptionPane.showInputDialog(pnlCalendar, "Enter an email:", "Create Account", JOptionPane.QUESTION_MESSAGE);
         		email = "'" + email + "'";
-        		age = JOptionPane.showInputDialog("Enter your age:");
-        		bYear = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth year:"));
-        		bMonth = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
-        		bDay = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
+        		//age = JOptionPane.showInputDialog("Enter your age:", "Create Account", JOptionPane.QUESTION_MESSAGE);
+        		bYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth year:", "Create Account", JOptionPane.QUESTION_MESSAGE));
+        		bMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth month:", "Create Account", JOptionPane.QUESTION_MESSAGE));
+        		bDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth day:", "Create Account", JOptionPane.QUESTION_MESSAGE));
         		System.out.println(controller.signUpUser(username, email, password, bYear, bMonth, bDay));
         		//System.out.println(controller.signInUser(email, password));
         		
@@ -72,9 +72,9 @@ public class CalendarProgram{
         	public void actionPerformed(ActionEvent e) {
         		String username, password, email;
         		int bDay, bMonth, bYear;
-        		email = JOptionPane.showInputDialog("Enter your email:");
+        		email = JOptionPane.showInputDialog(pnlCalendar, "Enter your email:", "Login", JOptionPane.QUESTION_MESSAGE);
         		email = "'" + email + "'";
-        		password = JOptionPane.showInputDialog("Enter your password:");
+        		password = JOptionPane.showInputDialog(pnlCalendar, "Enter your password:", "Login", JOptionPane.QUESTION_MESSAGE);
         		System.out.println(controller.signInUser(email, password));
         		//System.out.println(controller.signInUser(email, password));
         		
@@ -83,15 +83,15 @@ public class CalendarProgram{
         });
         accountMenu.add(loginButton);
         
-        JMenuItem changeUsername = new JMenuItem(new AbstractAction("change username") {
+        JMenuItem changeUsername = new JMenuItem(new AbstractAction("Reset Username") {
         	public void actionPerformed(ActionEvent e) 
         	{
-        		String email = JOptionPane.showInputDialog("Enter your email: ");
+        		String email = JOptionPane.showInputDialog(pnlCalendar, "Enter your email: ", "Reset Username", JOptionPane.QUESTION_MESSAGE);
         		email = "'" + email + "'";
-        		int year = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth year:"));
-        		int month = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
-        		int day = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
-        		String newName = JOptionPane.showInputDialog("Enter Your New Name: ");	
+        		int year = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth year:", "Reset Username", JOptionPane.QUESTION_MESSAGE));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth month:", "Reset Username", JOptionPane.QUESTION_MESSAGE));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth day:", "Reset Username", JOptionPane.QUESTION_MESSAGE));
+        		String newName = JOptionPane.showInputDialog(pnlCalendar, "Enter Your New Name: ", "Reset Username", JOptionPane.QUESTION_MESSAGE);	
         		LocalDate birthday = LocalDate.of(year, month, day);
         		System.out.println(controller.resetName(newName, email, birthday));
         		//System.out.println("changeUsername");
@@ -99,32 +99,32 @@ public class CalendarProgram{
         });
         accountMenu.add(changeUsername);
         
-        JMenuItem changePassword = new JMenuItem(new AbstractAction("change password") {
+        JMenuItem changePassword = new JMenuItem(new AbstractAction("Reset Password") {
         	public void actionPerformed(ActionEvent e) 
         	{
-        		String email = JOptionPane.showInputDialog("Enter your email: ");
+        		String email = JOptionPane.showInputDialog(pnlCalendar, "Enter your email: ", "Reset Password", JOptionPane.QUESTION_MESSAGE);
         		email = "'" + email + "'";
-        		int year = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth year:"));
-        		int month = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth month:"));
-        		int day = Integer.parseInt(JOptionPane.showInputDialog("Enter your birth day:"));
-        		String newPass = JOptionPane.showInputDialog("Enter Your New Password: ");	
+        		int year = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth year:", "Reset Password", JOptionPane.QUESTION_MESSAGE));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth month:", "Reset Password", JOptionPane.QUESTION_MESSAGE));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth day:", "Reset Password", JOptionPane.QUESTION_MESSAGE));
+        		String newPass = JOptionPane.showInputDialog(pnlCalendar, "Enter Your New Password: ", "Reset Password", JOptionPane.QUESTION_MESSAGE);	
         		LocalDate birthday = LocalDate.of(year, month, day);
         		System.out.println(controller.resetPassword(newPass, email, birthday));
         	}
         });
         accountMenu.add(changePassword);
         
-        JMenuItem changeUserInformation = new JMenuItem(new AbstractAction("change email") 
+        JMenuItem changeUserInformation = new JMenuItem(new AbstractAction("Change Email") 
         {
         	public void actionPerformed(ActionEvent e) 
         	{
-        		String email = JOptionPane.showInputDialog(accountMenu, "Enter your current email: ", "Current Email", JOptionPane.QUESTION_MESSAGE);
+        		String email = JOptionPane.showInputDialog(pnlCalendar, "Enter your current email: ", "Current Email", JOptionPane.QUESTION_MESSAGE);
         		email = "'" + email + "'";
-        		int year = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth year:", "Birth Year", JOptionPane.QUESTION_MESSAGE));
-        		int month = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth month:", "Birth Month", JOptionPane.QUESTION_MESSAGE));
-        		int day = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth day:", "Birth Day", JOptionPane.QUESTION_MESSAGE));
+        		int year = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth year:", "Birth Year", JOptionPane.QUESTION_MESSAGE));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth month:", "Birth Month", JOptionPane.QUESTION_MESSAGE));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth day:", "Birth Day", JOptionPane.QUESTION_MESSAGE));
         		LocalDate birthday = LocalDate.of(year, month, day);
-        		String newEmail = JOptionPane.showInputDialog(accountMenu, "Enter your new email: ", "New Email", JOptionPane.QUESTION_MESSAGE);
+        		String newEmail = JOptionPane.showInputDialog(pnlCalendar, "Enter your new email: ", "New Email", JOptionPane.QUESTION_MESSAGE);
         		newEmail = "'" + newEmail + "'";
         		//LocalDate newBirthday = LocalDate.of(newYear, newMonth, newDay);
         		System.out.println(controller.resetEmail(email, newEmail, birthday));
@@ -135,21 +135,21 @@ public class CalendarProgram{
         
         
         menubar.add(accountMenu);
-        
+         
         //Change Birthday
         JMenu birthdayMenu = new JMenu("Change User Information");
         JMenuItem changeBirthday = new JMenuItem(new AbstractAction("Change Birthday") {
         	public void actionPerformed(ActionEvent e)
         	{
-        		String email = JOptionPane.showInputDialog(accountMenu, "Enter your current email: ", "Current Email", JOptionPane.QUESTION_MESSAGE);
+        		String email = JOptionPane.showInputDialog(pnlCalendar, "Enter your current email: ", "Current Email", JOptionPane.QUESTION_MESSAGE);
         		email = "'" + email + "'";
-        		int year = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth year:", "Birth Year", JOptionPane.QUESTION_MESSAGE));
-        		int month = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth month:", "Birth Month", JOptionPane.QUESTION_MESSAGE));
-        		int day = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your birth day:", "Birth Day", JOptionPane.QUESTION_MESSAGE));
+        		int year = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth year:", "Birth Year", JOptionPane.QUESTION_MESSAGE));
+        		int month = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth month:", "Birth Month", JOptionPane.QUESTION_MESSAGE));
+        		int day = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth day:", "Birth Day", JOptionPane.QUESTION_MESSAGE));
         		LocalDate birthday = LocalDate.of(year, month, day);
-        		int newYear = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your new birth year: ", "New Birth Year", JOptionPane.QUESTION_MESSAGE));
-        		int newMonth = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your new birth month", "New Month", JOptionPane.QUESTION_MESSAGE));
-        		int newDay = Integer.parseInt(JOptionPane.showInputDialog(accountMenu, "Enter your new birth day", "New Day", JOptionPane.QUESTION_MESSAGE));
+        		int newYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your new birth year: ", "New Birth Year", JOptionPane.QUESTION_MESSAGE));
+        		int newMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your new birth month", "New Month", JOptionPane.QUESTION_MESSAGE));
+        		int newDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your new birth day", "New Day", JOptionPane.QUESTION_MESSAGE));
         		System.out.println(controller.resetBirthday(email, birthday, newYear, newMonth, newDay));
         	}
         });
