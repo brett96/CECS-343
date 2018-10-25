@@ -58,6 +58,11 @@ public class User
 	{
 		return birthday;
 	}
+	
+	public void setBirthday(LocalDate bday)
+	{
+		birthday = bday;
+	}
 
 	/**
 	 * Returns user name

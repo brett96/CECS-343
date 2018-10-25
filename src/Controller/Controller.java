@@ -234,7 +234,7 @@ public final class Controller
 	    			//System.out.println("u.getEmail() = " + u.getEmail() + "; email = " + email);
 	    			String userEmail = u.getEmail();
 	    			userEmail = "'" + userEmail + "'";
-	    			System.out.println("u.getBirthday() = " + u.getBirthday().toString() + "; birthday = " + birthday.toString());
+	    			//System.out.println("u.getBirthday() = " + u.getBirthday().toString() + "; birthday = " + birthday.toString());
 	        		if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(birthday))
 	        		{
 	        			controller.getUsersDB().changePassword(email, newPass);
@@ -306,6 +306,7 @@ public final class Controller
 	    	if(currentUser != null)
 	    	{
 	    		controller.getUsersDB().changeBirthday(email, year, month, day);
+	    		currentUser.setBirthday(LocalDate.of(year, month, day));
 	    		return "SUCCESS";
 	    	}
 	    	else
@@ -318,6 +319,7 @@ public final class Controller
 	        		if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(currentBDay))
 	        		{
 	        			controller.getUsersDB().changeBirthday(email, year, month, day);
+	        			u.setBirthday(LocalDate.of(year, month, day));
 	        	    	//System.out.println(controller.getUsersDB().getRecord(String.valueOf(u.getId())));    	
 	        			return "SUCCESS";
 	        		}

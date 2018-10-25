@@ -193,7 +193,7 @@ public class CalendarProgram{
                 refreshCalendar(currentMonth, currentYear);  
             }
         });
-        calendarViewBar.add(weekView);
+     
         
         
         JMenuItem monthView = new JMenuItem(new AbstractAction("month view") {
@@ -204,7 +204,7 @@ public class CalendarProgram{
                 refreshCalendar(currentMonth, currentYear);  
         	}
         });
-        calendarViewBar.add(monthView);
+        
         
 
         JMenuItem dayView = new JMenuItem(new AbstractAction("day view") {
@@ -215,6 +215,8 @@ public class CalendarProgram{
                 refreshCalendar(currentMonth, currentYear);  
         	}
         });
+        calendarViewBar.add(monthView);
+        calendarViewBar.add(weekView);
         calendarViewBar.add(dayView);
         
         JMenuItem colorView = new JMenuItem(new AbstractAction("change calendar color") {
@@ -431,7 +433,7 @@ public class CalendarProgram{
             //Draw calendar week view
             for (int i=0; i<1; i++){
                 int column  = 0;
-                mtblCalendar.setValueAt("Appointments for " + realMonth + "/" + realDay + "/" + realYear + ": ", i, column);
+                mtblCalendar.setValueAt("Appointments for day " + realDay + ": ", i, column);
             }
         }
         
