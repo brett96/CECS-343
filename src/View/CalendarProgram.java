@@ -358,6 +358,7 @@ public class CalendarProgram{
         else if (boolWeekView == true)
         {
             mtblCalendar.setColumnCount(0);
+            //mtblCalendar.setRowCount(4);
             mtblCalendar.addColumn("week view");
         }   
         else if (boolDayView == true)
@@ -387,7 +388,7 @@ public class CalendarProgram{
         else if (boolWeekView == true)
         {
             //Clear table
-            for (int i=0; i<6; i++){
+            for (int i=0; i<4; i++){
                     mtblCalendar.setValueAt(null, i, 0);
             }
         }
@@ -406,6 +407,8 @@ public class CalendarProgram{
         
         if(boolMonthView == true)
         {
+        	//mtblCalendar.setRowCount(6);
+        	tblCalendar.setRowHeight(230/6);
             //Draw calendar
             for (int i=1; i<=nod; i++){
                 int row = new Integer((i+som-2)/7);
@@ -415,18 +418,20 @@ public class CalendarProgram{
         }
         else if (boolWeekView == true)
         {
+        	//mtblCalendar.setRowCount(4);
+        	tblCalendar.setRowHeight(200/4);
             //Draw calendar week view
-            for (int i=1; i<5; i++){
+            for (int i=0; i<4; i++){
                 int column  = 0;
-                mtblCalendar.setValueAt(i, i, column);
+                mtblCalendar.setValueAt("Appointments for week " + (i+1), i, column);
             }
         }
         else if (boolDayView == true)
         {
             //Draw calendar week view
-            for (int i=1; i<2; i++){
+            for (int i=0; i<1; i++){
                 int column  = 0;
-                mtblCalendar.setValueAt(i, i, column);
+                mtblCalendar.setValueAt("Appointments for " + realMonth + "/" + realDay + "/" + realYear + ": ", i, column);
             }
         }
         
@@ -443,7 +448,7 @@ public class CalendarProgram{
             else{ //Week
                 setBackground(new Color(255, 255, 255));
             }
-            if (value != null){
+            if (value != null && boolMonthView == true){
                 if (Integer.parseInt(value.toString()) == realDay && currentMonth == realMonth && currentYear == realYear){ //Today
                     setBackground(new Color(220, 220, 255));
                 }
