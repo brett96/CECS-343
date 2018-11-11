@@ -45,6 +45,7 @@ public final class Controller
     	{
     		controller = new Controller();
     		controller.allUsersList = FXCollections.observableArrayList();
+    		controller.allAppointmentsList = FXCollections.observableArrayList();
     		
     		try
             {
@@ -60,6 +61,24 @@ public final class Controller
             		int day = Integer.parseInt(values.get(6));
             		controller.allUsersList.add(new User(name, email, appointmentsID , year, month, day));
             	}
+            	
+            	controller.setAppointmentsDB(new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES));
+            	ArrayList<ArrayList<String>> apptList = controller.getAppointmentsDB().getAllRecords();
+            	for(ArrayList<String> values : apptList)
+            	{
+            		int appointmentsID = Integer.parseInt(values.get(0));
+            		String name = values.get(1);
+            		int startYear = Integer.parseInt(values.get(2));
+            		int startMonth = Integer.parseInt(values.get(3));
+            		int startDay = Integer.parseInt(values.get(4));
+            		int endYear = Integer.parseInt(values.get(5));
+            		int endMonth = Integer.parseInt(values.get(6));
+            		int endDay = Integer.parseInt(values.get(7));
+            		int startTime = Integer.parseInt(values.get(8));
+            		int endTime = Integer.parseInt(values.get(9));
+            		controller.allAppointmentsList.add(new Appointment(appointmentsID, name, startYear, startMonth , startDay,  endYear, endMonth, endDay, startTime, endTime));
+            	}
+            	
             	
             	controller.usersDB = new DBModel(DB_NAME, USER_TABLE_NAME, USER_FIELD_NAMES, USER_FIELD_TYPES);
             	controller.userAppointmentsDB = new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES);
@@ -156,6 +175,7 @@ public final class Controller
 					if (password.equals(storedPassword))
 					{
 						this.currentUser = u;
+						controller.addAppointment("Presentation", 2000, 01, 01, 2000, 01, 01, 100, 200);
 						return "SIGNED IN";
 					}
 						
@@ -409,8 +429,8 @@ public final class Controller
 	    	{
 	    		controller.getAppointmentsDB().insertAppointment(APPOINTMENTS_FIELD_NAMES, values);
 	    		//int id = currentUser.getId();
-	    		//Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
-	    		//controller.allAppointmentsList.add(newAppointment);  // Causes null pointer for some reason
+	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
+	    		controller.allAppointmentsList.add(newAppointment);  // Causes null pointer for some reason
 	    	}
 	    	catch(SQLException e)
 	    	{
@@ -458,6 +478,11 @@ public final class Controller
 	public void setUsersDB(DBModel usersDB) 
 	{
 		this.usersDB = usersDB;
+	}
+	
+	public void setAppointmentsDB(DBModel appointmentsDB)
+	{
+		this.userAppointmentsDB = appointmentsDB;
 	}
 }
     
