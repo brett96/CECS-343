@@ -11,7 +11,6 @@ public class User
 	
 	/**
 	 * Default User constructor
-	 * TODO:  Add birthday, username separate from email
 	 */
 	public User()
 	{

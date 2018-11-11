@@ -107,6 +107,22 @@ public class DBModel
 		return getAllRecords().size();
 	}
     
+    public void insertAppointment(String[] fields, String[] values) throws SQLException
+    {
+    	if(fields == null || values == null || fields.length == 0 || fields.length != values.length)
+            return;
+
+        StringBuilder insertSQL = new StringBuilder("INSERT INTO ");
+        insertSQL.append(mTableName).append("(");
+        for(int i = 0; i < fields.length; i++)
+            insertSQL.append(fields[i]).append((i < fields.length - 1) ? "," : ") VALUES(");
+        for(int i = 0; i < values.length; i++)
+            insertSQL.append(convertToSQLText(fields[i], values[i])).append((i < values.length - 1) ? "," : ")");
+        System.out.println("done");
+
+        mStmt.executeUpdate(insertSQL.toString());
+    }
+    
     public int createRecord(String[] fields, String[] values) throws SQLException
     {
         if(fields == null || values == null || fields.length == 0 || fields.length != values.length)
@@ -123,6 +139,7 @@ public class DBModel
         StringBuilder updateSQL = new StringBuilder("UPDATE users SET appointmentsID = ").append(mStmt.getGeneratedKeys().getInt(1));
         updateSQL.append(" WHERE email = ").append(values[1]);
         mStmt.executeUpdate(updateSQL.toString());
+        System.out.println(mStmt.getGeneratedKeys().getInt(1));
         // Minor change in createRecord to return the newly generated primary key (as an int)
         return mStmt.getGeneratedKeys().getInt(1);
     }

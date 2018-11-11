@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import Model.Appointment;
 import Model.DBModel;
 import Model.User;
 import javafx.collections.FXCollections;
@@ -16,14 +17,14 @@ public final class Controller
 	private static final String DB_NAME = "cecs343.db";
 	private static final String USER_TABLE_NAME = "users";
     private static final String[] USER_FIELD_NAMES = {"appointmentsID", "name", "email", "password", "birthYear", "birthMonth", "birthDay"};
-    private static final String[] USER_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT PRIMARY KEY", "TEXT", "INTEGER", "INTEGER", "INTEGER"};
+    private static final String[] USER_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT PRIMARY KEY", "TEXT", "INTEGER", "INTEGER", "INTEGER"};	// Primary key is actually appointmentsID, NOT email.  Change is in effect but can't be changed here for some reason
     
     private static final String APPOINTMENTS_TABLE_NAME = "appointments";
-    private static final String[] APPOINTMENTS_FIELD_NAMES = {"appointmentsID", "appointmentName", "appointmentDate",
-    		"appointmentStart", "appointmentEnd"};
-    private static final String[] APPOINTMENTS_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT", "TEXT", "TEXT"};
+    private static final String[] APPOINTMENTS_FIELD_NAMES = {"appointmentsID", "appointmentName", "startYear", "startMonth", "startDay", "endYear", "endMonth", "endDay", "startTime", "endTime"};
+    private static final String[] APPOINTMENTS_FIELD_TYPES = {"INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
     
     private ObservableList<User> allUsersList;
+    private ObservableList<Appointment> allAppointmentsList;
     private User currentUser;
     private DBModel DB;
     private DBModel usersDB;
@@ -60,7 +61,7 @@ public final class Controller
             		controller.allUsersList.add(new User(name, email, appointmentsID , year, month, day));
             	}
             	
-            	controller.DB = new DBModel(DB_NAME, USER_TABLE_NAME, USER_FIELD_NAMES, USER_FIELD_TYPES);
+            	controller.usersDB = new DBModel(DB_NAME, USER_TABLE_NAME, USER_FIELD_NAMES, USER_FIELD_TYPES);
             	controller.userAppointmentsDB = new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES);
             	
             }
@@ -386,12 +387,53 @@ public final class Controller
     }
     
     /**
+     * Adds appointment to appointment database
+     * @param name
+     * @param startYear
+     * @param startMonth
+     * @param startDay
+     * @param endYear
+     * @param endMonth
+     * @param endDay
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public String addAppointment(String name, int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int startTime, int endTime)
+    {
+    	if (currentUser != null) 
+    	{
+    		int id = currentUser.getId();
+	    	String[] values = {Integer.toString(id), name, Integer.toString(startYear), Integer.toString(startMonth), Integer.toString(startDay), Integer.toString(endYear), Integer.toString(endMonth), Integer.toString(endDay), Integer.toString(startTime), Integer.toString(endTime)};
+	    	try
+	    	{
+	    		controller.getAppointmentsDB().insertAppointment(APPOINTMENTS_FIELD_NAMES, values);
+	    		//int id = currentUser.getId();
+	    		//Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
+	    		//controller.allAppointmentsList.add(newAppointment);  // Causes null pointer for some reason
+	    	}
+	    	catch(SQLException e)
+	    	{
+	    		e.printStackTrace();
+	    		return "Account Not Created";
+	    	}
+	    	return "SUCCESS";
+    	}
+    	return "You must log in first";
+    }
+    
+    /**
      * Returns ObservableList of all user data
      * @return
      */
     public ObservableList<User> getAllUsers()
     {
     	return controller.allUsersList;
+    }
+    
+    public ObservableList<Appointment> getAllAppointments()
+    {
+    	return controller.allAppointmentsList;
     }
     
     
@@ -402,6 +444,11 @@ public final class Controller
 	public DBModel getUsersDB() 
 	{
 		return usersDB;
+	}
+	
+	public DBModel getAppointmentsDB()
+	{
+		return userAppointmentsDB;
 	}
 
 	/**
