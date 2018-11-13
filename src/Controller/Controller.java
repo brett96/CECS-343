@@ -16,17 +16,17 @@ public final class Controller
 	private static Controller controller;
 	private static final String DB_NAME = "cecs343.db";
 	private static final String USER_TABLE_NAME = "users";
-    private static final String[] USER_FIELD_NAMES = {"appointmentsID", "name", "email", "password", "birthYear", "birthMonth", "birthDay"};
+    private static final String[] USER_FIELD_NAMES = {"userID", "name", "email", "password", "birthYear", "birthMonth", "birthDay"};
     private static final String[] USER_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT PRIMARY KEY", "TEXT", "INTEGER", "INTEGER", "INTEGER"};	// Primary key is actually appointmentsID, NOT email.  Change is in effect but can't be changed here for some reason
     
     private static final String APPOINTMENTS_TABLE_NAME = "appointments";
-    private static final String[] APPOINTMENTS_FIELD_NAMES = {"appointmentsID", "appointmentName", "startYear", "startMonth", "startDay", "endYear", "endMonth", "endDay", "startTime", "endTime"};
-    private static final String[] APPOINTMENTS_FIELD_TYPES = {"INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
+    private static final String[] APPOINTMENTS_FIELD_NAMES = {"userID", "appointmentName", "startYear", "startMonth", "startDay", "endYear", "endMonth", "endDay", "startTime", "endTime", "aID"};
+    private static final String[] APPOINTMENTS_FIELD_TYPES = {"INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
     
     private ObservableList<User> allUsersList;
     private ObservableList<Appointment> allAppointmentsList;
     private User currentUser;
-    private DBModel DB;
+    //private DBModel DB;
     private DBModel usersDB;
     private DBModel userAppointmentsDB;
     
@@ -41,6 +41,7 @@ public final class Controller
      */
     public static Controller getInstance()
     {
+    	controller = null;
     	if(controller == null)
     	{
     		controller = new Controller();
@@ -53,20 +54,20 @@ public final class Controller
             	ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getAllRecords();
             	for(ArrayList<String> values : resultsList)
             	{
-            		int appointmentsID = Integer.parseInt(values.get(0));
+            		int userID = Integer.parseInt(values.get(0));
             		String name = values.get(1);
             		String email = values.get(2);
             		int year = Integer.parseInt(values.get(4));
             		int month = Integer.parseInt(values.get(5));
             		int day = Integer.parseInt(values.get(6));
-            		controller.allUsersList.add(new User(name, email, appointmentsID , year, month, day));
+            		controller.allUsersList.add(new User(name, email, userID , year, month, day));
             	}
             	
             	controller.setAppointmentsDB(new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES));
             	ArrayList<ArrayList<String>> apptList = controller.getAppointmentsDB().getAllRecords();
             	for(ArrayList<String> values : apptList)
             	{
-            		int appointmentsID = Integer.parseInt(values.get(0));
+            		int userID = Integer.parseInt(values.get(0));
             		String name = values.get(1);
             		int startYear = Integer.parseInt(values.get(2));
             		int startMonth = Integer.parseInt(values.get(3));
@@ -76,7 +77,8 @@ public final class Controller
             		int endDay = Integer.parseInt(values.get(7));
             		int startTime = Integer.parseInt(values.get(8));
             		int endTime = Integer.parseInt(values.get(9));
-            		controller.allAppointmentsList.add(new Appointment(appointmentsID, name, startYear, startMonth , startDay,  endYear, endMonth, endDay, startTime, endTime));
+            		int aID = Integer.parseInt(values.get(10));
+            		controller.allAppointmentsList.add(new Appointment(userID, name, startYear, startMonth , startDay,  endYear, endMonth, endDay, startTime, endTime, aID));
             	}
             	
             	
@@ -121,39 +123,6 @@ public final class Controller
     	this.currentUser = user;
     }
     
-    /**
-     * Signs in user if email and password match record and are valid
-     * @param email
-     * @param password
-     * @return
-     */
-    public User signIn(String email, String password)
-    {
-    	for (User u : controller.allUsersList)
-    	{
-    		String userEmail = u.getEmail();
-			userEmail = "'" + userEmail + "'";
-			if (userEmail.equalsIgnoreCase(email))
-			{
-				try 
-				{
-					ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getRecord(String.valueOf(u.getId()));
-					String storedPassword = resultsList.get(0).get(3);
-					if (password.equals(storedPassword))
-					{
-						this.currentUser = u;
-						return u;
-						
-					}										
-				} 
-				catch (Exception e) 
-				{
-					e.printStackTrace();
-				}
-			}
-    	}
-    	return null;
-    }
     
     /**
      * Sign in method for Sign in scene
@@ -175,7 +144,6 @@ public final class Controller
 					if (password.equals(storedPassword))
 					{
 						this.currentUser = u;
-						controller.addAppointment("Presentation", 2000, 01, 01, 2000, 01, 01, 100, 200);
 						return "SIGNED IN";
 					}
 						
@@ -356,6 +324,82 @@ public final class Controller
     	return "FAILED";
     }
     
+    /**
+     * User will select appointment to change from GUI.  Selected appointment id will be pulled and passed w/ specified newName
+     * @param id
+     * @param newName
+     * @return
+     */
+    public String resetAppointmentName(int id, String newName)
+    {
+    	try
+    	{
+    		controller.getAppointmentsDB().changeAppointmentName(id, newName);
+    		return "SUCCESS";
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    		return "ERROR";
+    	}
+    }
+    
+    public String resetAppointmentStartDate(int id, int year, int month, int day)
+    {
+    	try
+    	{
+    		controller.getAppointmentsDB().changeAppointmentStartDate(id, year, month, day);
+    		return "SUCCESS";
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    		return "ERROR";
+    	}
+    }
+    
+    public String resetAppointmentEndDate(int id, int year, int month, int day)
+    {
+    	try
+    	{
+    		controller.getAppointmentsDB().changeAppointmentEndDate(id, year, month, day);
+    		return "SUCCESS";
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    		return "ERROR";
+    	}
+    }
+    
+    public String resetAppointmentStartTime(int id, int start)
+    {
+    	try
+    	{
+    		controller.getAppointmentsDB().changeAppointmentStartTime(id, start);
+    		return "SUCCESS";
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    		return "ERROR";
+    	}
+    }
+    
+    public String resetAppointmentEndTime(int id, int start)
+    {
+    	try
+    	{
+    		controller.getAppointmentsDB().changeAppointmentEndTime(id, start);
+    		return "SUCCESS";
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    		return "ERROR";
+    	}
+    }
+    
 //    public boolean verifyOwner(String email, LocalDate birthday)
 //    {
 //    	if(currentUser != null)
@@ -389,6 +433,7 @@ public final class Controller
     	}
     	// Add user to database
     	String[] values = {name, email, password, Integer.toString(year), Integer.toString(month), Integer.toString(day)};
+    	System.out.println(email);
     	try
     	{
     		int id = controller.getUsersDB().createRecord(Arrays.copyOfRange
@@ -427,9 +472,9 @@ public final class Controller
 	    	String[] values = {Integer.toString(id), name, Integer.toString(startYear), Integer.toString(startMonth), Integer.toString(startDay), Integer.toString(endYear), Integer.toString(endMonth), Integer.toString(endDay), Integer.toString(startTime), Integer.toString(endTime)};
 	    	try
 	    	{
-	    		controller.getAppointmentsDB().insertAppointment(APPOINTMENTS_FIELD_NAMES, values);
+	    		int aID = controller.getAppointmentsDB().insertAppointment(Arrays.copyOfRange(APPOINTMENTS_FIELD_NAMES, 0, APPOINTMENTS_FIELD_NAMES.length - 1), values);
 	    		//int id = currentUser.getId();
-	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
+	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID);
 	    		controller.allAppointmentsList.add(newAppointment);  // Causes null pointer for some reason
 	    	}
 	    	catch(SQLException e)

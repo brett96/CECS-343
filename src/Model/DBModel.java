@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import Controller.Controller;
+
 public class DBModel 
 {
 	private String mDBName;
@@ -32,7 +34,8 @@ public class DBModel
     }
     
     private void createTable() throws SQLException {
-    	//mStmt.executeUpdate("DROP TABLE IF EXISTS " + mTableName);	//  Deletes and repopulates the database
+//    	mStmt.executeUpdate("DROP TABLE IF EXISTS users");	//  Deletes and repopulates the database
+//    	mStmt.executeUpdate("DROP TABLE IF EXISTS appointments");
         StringBuilder createSQL = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         createSQL.append(mTableName).append("(");
         for (int i = 0; i < mFieldNames.length; i++)
@@ -107,10 +110,10 @@ public class DBModel
 		return getAllRecords().size();
 	}
     
-    public void insertAppointment(String[] fields, String[] values) throws SQLException
+    public int insertAppointment(String[] fields, String[] values) throws SQLException
     {
     	if(fields == null || values == null || fields.length == 0 || fields.length != values.length)
-            return;
+            return -1;
 
         StringBuilder insertSQL = new StringBuilder("INSERT INTO ");
         insertSQL.append(mTableName).append("(");
@@ -118,9 +121,13 @@ public class DBModel
             insertSQL.append(fields[i]).append((i < fields.length - 1) ? "," : ") VALUES(");
         for(int i = 0; i < values.length; i++)
             insertSQL.append(convertToSQLText(fields[i], values[i])).append((i < values.length - 1) ? "," : ")");
-        System.out.println("done");
 
         mStmt.executeUpdate(insertSQL.toString());
+        StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET aID = ").append(mStmt.getGeneratedKeys().getInt(1));
+        updateSQL.append(" WHERE aID is null");//.append(values[0]);
+        mStmt.executeUpdate(updateSQL.toString());
+        System.out.println("done");
+        return mStmt.getGeneratedKeys().getInt(1);
     }
     
     public int createRecord(String[] fields, String[] values) throws SQLException
@@ -136,11 +143,11 @@ public class DBModel
             insertSQL.append(convertToSQLText(fields[i], values[i])).append((i < values.length - 1) ? "," : ")");
 
         mStmt.executeUpdate(insertSQL.toString());
-        StringBuilder updateSQL = new StringBuilder("UPDATE users SET appointmentsID = ").append(mStmt.getGeneratedKeys().getInt(1));
-        updateSQL.append(" WHERE email = ").append(values[1]);
-        mStmt.executeUpdate(updateSQL.toString());
-        System.out.println(mStmt.getGeneratedKeys().getInt(1));
-        // Minor change in createRecord to return the newly generated primary key (as an int)
+      StringBuilder updateSQL = new StringBuilder("UPDATE users SET userID = ").append(mStmt.getGeneratedKeys().getInt(1));
+      updateSQL.append(" WHERE email = ").append(values[1]);
+      mStmt.executeUpdate(updateSQL.toString());
+      System.out.println(mStmt.getGeneratedKeys().getInt(1));
+      // Minor change in createRecord to return the newly generated primary key (as an int)
         return mStmt.getGeneratedKeys().getInt(1);
     }
     
@@ -184,7 +191,52 @@ public class DBModel
     {
     	StringBuilder updateSQL = new StringBuilder("UPDATE users SET name = ").append("'" + name + "'");
     	updateSQL.append(" WHERE email = ").append(email);
-    	System.out.println(updateSQL);
+    	//System.out.println(updateSQL);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
+    /**
+     * Changes appointment name 
+     * @param id
+     * @param currentName
+     * @param newName
+     * @param startTime
+     * @param endTime
+     */
+    public void changeAppointmentName(int id, String newName) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET appointmentName = ").append("'" + newName + "'");
+    	updateSQL.append(" WHERE aID = ").append(id);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
+    public void changeAppointmentStartDate(int id, int year, int month, int day) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET startYear = ").append(year);
+    	updateSQL.append(", startMonth = ").append(month).append(", startDay = ").append(day);
+    	updateSQL.append(" WHERE aID = ").append(id);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
+    public void changeAppointmentEndDate(int id, int year, int month, int day) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET endYear = ").append(year);
+    	updateSQL.append(", endMonth = ").append(month).append(", endDay = ").append(day);
+    	updateSQL.append(" WHERE aID = ").append(id);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
+    public void changeAppointmentStartTime(int id, int start) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET startTime = ").append(start);
+    	updateSQL.append(" WHERE aID = ").append(id);
+    	mStmt.executeUpdate(updateSQL.toString());
+    }
+    
+    public void changeAppointmentEndTime(int id, int start) throws SQLException
+    {
+    	StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET startTime = ").append(start);
+    	updateSQL.append(" WHERE aID = ").append(id);
     	mStmt.executeUpdate(updateSQL.toString());
     }
     
