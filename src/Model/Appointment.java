@@ -1,7 +1,5 @@
 package Model;
 
-import java.time.LocalDateTime;
-
 public class Appointment
 {
 	private int id;
@@ -35,7 +33,7 @@ public class Appointment
 	{
 		return id;
 	}
-	
+
 	public void setID(int id)
 	{
 		this.id = id;
@@ -81,5 +79,11 @@ public class Appointment
 		endTime = end;
 	}
 	
+	@Override
+	public String toString() {
+		return "Appointment [id=" + id + ", name=" + name + ", startYear=" + startYear + ", startMonth=" + startMonth
+				+ ", startDay=" + startDay + ", endYear=" + endYear + ", endMonth=" + endMonth + ", endDay=" + endDay
+				+ ", startTime=" + startTime + ", endTime=" + endTime + ", aID=" + aID + "]\n";
+	}
 	
 }
