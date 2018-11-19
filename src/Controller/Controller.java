@@ -137,23 +137,27 @@ public final class Controller
      * @param email
      * @param password
      * @return
+     * @throws SQLException 
      */
-    public String signInUser(String email, String password) {
-		for (User u : controller.allUsersList)	// Iterate through every user
+    public String signInUser(String email, String password) throws SQLException 
+    {
+    	ArrayList<ArrayList<String>> usersList = controller.getUsersDB().getAllRecords();	// Get all data from users table
+		for (ArrayList<String> values : usersList)	// Iterate through every user
 		{
-			String userEmail = u.getEmail();
+			String userEmail = values.get(2);
 			userEmail = "'" + userEmail + "'";	// match email format from table
 			if (userEmail.equalsIgnoreCase(email))	// Compare user email to given email
 			{
 				try 
 				{
 					// Get iterated user's password
-					ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getRecord(String.valueOf(u.getId()));
+					ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getRecord(String.valueOf(values.get(0)));
 					String storedPassword = resultsList.get(0).get(3);
 					if (password.equals(storedPassword))	// Check for match to sign in
 					{
-						this.currentUser = u;
-						System.out.println(controller.getAppointmentsForCurrentUser());
+						this.currentUser = controller.allUsersList.get(Integer.valueOf(values.get(0)) - 1);		// Get index by calculating userID-1
+						System.out.println(currentUser.getName() + " is signed in.  Appointments:");
+						System.out.print(controller.getAppointmentsForCurrentUser());
 						return "SIGNED IN";
 					}
 						
@@ -182,7 +186,8 @@ public final class Controller
     	{
     		if(currentUser != null)
     		{
-    			controller.getUsersDB().changeName(currentUser.getEmail(), newName);
+    			String currentEmail = "'" + currentUser.getEmail() + "'";
+    			controller.getUsersDB().changeName(currentEmail, newName);
     			currentUser.setName(newName);
     			return "SUCCESS";
     		}

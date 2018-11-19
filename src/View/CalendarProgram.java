@@ -8,6 +8,7 @@ import Controller.Controller;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import javax.swing.JOptionPane;
@@ -75,7 +76,12 @@ public class CalendarProgram{
         		email = JOptionPane.showInputDialog(pnlCalendar, "Enter your email:", "Login", JOptionPane.QUESTION_MESSAGE);
         		email = "'" + email + "'";
         		password = JOptionPane.showInputDialog(pnlCalendar, "Enter your password:", "Login", JOptionPane.QUESTION_MESSAGE);
-        		System.out.println(controller.signInUser(email, password));
+        		try {
+					System.out.println(controller.signInUser(email, password));
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
         		//System.out.println(controller.signInUser(email, password));
         		
         
