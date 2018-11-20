@@ -94,7 +94,27 @@ public class Appointment
 		return startTime;
 	}
 	
+<<<<<<< HEAD
 	public void setStartTime(int start)
+=======
+	public int getStartDay()
+	{
+		return startDay;
+	}
+	
+	public int getStartMonth()
+	{
+		return startMonth;
+	}
+	
+	public int getStartYear()
+	{
+		return startYear;
+	}
+	
+	
+	public void setStart(int start)
+>>>>>>> 652d245590150ae8a34084764375c2e601232d26
 	{
 		startTime = start;
 	}

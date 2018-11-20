@@ -5,6 +5,8 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import Controller.Controller;
+import Model.Appointment;
+import javafx.collections.ObservableList;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -26,6 +28,7 @@ public class CalendarProgram{
     static JPanel pnlCalendar;
     static int realYear, realMonth, realDay, currentYear, currentMonth;
     static boolean boolDayView, boolWeekView, boolMonthView;
+    static boolean appointmentToday;
     
     public static void main (String args[]){
     	boolMonthView = true;
@@ -168,7 +171,18 @@ public class CalendarProgram{
         
         JMenuItem makeAppointmentButton = new JMenuItem(new AbstractAction("make appointment") {
         	public void actionPerformed(ActionEvent e) {
-        		System.out.println("makeAppointmentButton");
+        		String name = JOptionPane.showInputDialog(pnlCalendar, "Enter your appointment name:", "Name", JOptionPane.QUESTION_MESSAGE);
+        		int startYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start year of your appointment:", "Start Year", JOptionPane.QUESTION_MESSAGE));
+        		int startMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start month of your appointment:", "Start Month", JOptionPane.QUESTION_MESSAGE));
+        		int startDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start day of your appointment:", "Start Day", JOptionPane.QUESTION_MESSAGE));
+        		int endYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end year of your appointment:", "End Year", JOptionPane.QUESTION_MESSAGE));
+        		int endMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end month of your appointment:", "End Month", JOptionPane.QUESTION_MESSAGE));
+        		int endDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end day of your appointment:", "End Day", JOptionPane.QUESTION_MESSAGE));
+        		int startTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start time of your appointment in millitary time(Eg. 7:30 AM = 0730):", "End Year", JOptionPane.QUESTION_MESSAGE));
+        		int endTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end time of your appointment in millitary time(Eg. 9:30 PM = 2130):", "End Year", JOptionPane.QUESTION_MESSAGE));
+
+        		controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
+        		refreshCalendar(currentMonth, currentYear);
         	}
         });
         appointmentMenu.add(makeAppointmentButton);
@@ -421,7 +435,21 @@ public class CalendarProgram{
             for (int i=1; i<=nod; i++){
                 int row = new Integer((i+som-2)/7);
                 int column  =  (i+som-2)%7;
-                mtblCalendar.setValueAt(i, row, column);
+                
+                appointmentToday = compareDayToAppointmentList(year, month, i);
+                //tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(0), new tblCalendarRenderer());
+                if(appointmentToday == true)
+                {
+                	String appointment = "("+i+")";
+                    mtblCalendar.setValueAt(appointment, row, column);
+
+                }
+                else
+                {
+                    mtblCalendar.setValueAt(i, row, column);
+
+                }
+                
             }
         }
         else if (boolWeekView == true)
@@ -447,6 +475,35 @@ public class CalendarProgram{
         tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(0), new tblCalendarRenderer());
     }
     
+    static boolean compareDayToAppointmentList(int year, int month, int day)
+    {
+    	ObservableList<Appointment> list = controller.getAllAppointments();
+    	int appointmentSize = list.size();
+    	for (int i = 0; i < appointmentSize; i++)
+    	{
+    		int appointmentDay = (list.get(i)).getStartDay();
+    		//System.out.println("appointmentDay: " + appointmentDay);
+    		
+    		int appointmentMonth = (list.get(i)).getStartMonth()-1;
+    		//System.out.println("appointmentMonth: " + appointmentMonth);
+    		
+    		int appointmentYear = (list.get(i)).getStartYear();
+    		//System.out.println("appointmentYear: " + appointmentYear);
+    		
+    		//System.out.println("day: " + day);
+    		//System.out.println("month: " + month);
+    		//System.out.println("year: " + year);
+    		
+    		if (appointmentDay == day && appointmentMonth == month && appointmentYear == year)
+    		{
+    			//System.out.println("made it");
+    			return true;
+    		}
+    	}
+    	//System.out.println((list.get(2)).getName());
+    	return false;
+    }
+    
     static class tblCalendarRenderer extends DefaultTableCellRenderer{
         public Component getTableCellRendererComponent (JTable table, Object value, boolean selected, boolean focused, int row, int column){
             super.getTableCellRendererComponent(table, value, selected, focused, row, column);
@@ -457,10 +514,25 @@ public class CalendarProgram{
                 setBackground(new Color(255, 255, 255));
             }
             if (value != null && boolMonthView == true){
-                if (Integer.parseInt(value.toString()) == realDay && currentMonth == realMonth && currentYear == realYear){ //Today
-                    setBackground(new Color(220, 220, 255));
-                }
+                //if (Integer.parseInt(value.toString()) == realDay && currentMonth == realMonth && currentYear == realYear){ //Today
+                //    setBackground(new Color(220, 220, 255));
+                //}
             }
+            if (appointmentToday == true)
+            {
+            	System.out.println("made it in the if");
+            	setBackground(new Color(255, 255, 255));
+            }
+            
+            /*
+             * 
+             * 
+             * TODO:  Insert the color block for appointments here and refresh the calendar after an appointment has been added
+             * 
+             * 
+             * 
+             */
+            
             setBorder(null);
             setForeground(Color.black);
             return this;
