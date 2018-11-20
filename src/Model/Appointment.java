@@ -58,31 +58,19 @@ public class Appointment
 	{
 		this.name = name;
 	}
-	
-	public int getStartYear()
-	{
-		return startYear;
-	}
+
 	
 	public void setStartYear(int year)
 	{
 		startYear = year;
 	}
 	
-	public int getStartMonth()
-	{
-		return startMonth;
-	}
 	
 	public void setStartMonth(int month)
 	{
 		startMonth = month;
 	}
 	
-	public int getStartDay()
-	{
-		return startDay;
-	}
 	
 	public void setStartDay(int day)
 	{
@@ -94,9 +82,6 @@ public class Appointment
 		return startTime;
 	}
 	
-<<<<<<< HEAD
-	public void setStartTime(int start)
-=======
 	public int getStartDay()
 	{
 		return startDay;
@@ -114,7 +99,6 @@ public class Appointment
 	
 	
 	public void setStart(int start)
->>>>>>> 652d245590150ae8a34084764375c2e601232d26
 	{
 		startTime = start;
 	}
