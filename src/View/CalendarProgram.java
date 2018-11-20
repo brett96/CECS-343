@@ -28,6 +28,7 @@ public class CalendarProgram{
     static JPanel pnlCalendar;
     static int realYear, realMonth, realDay, currentYear, currentMonth;
     static boolean boolDayView, boolWeekView, boolMonthView;
+    static boolean appointmentToday;
     
     public static void main (String args[]){
     	boolMonthView = true;
@@ -434,8 +435,21 @@ public class CalendarProgram{
             for (int i=1; i<=nod; i++){
                 int row = new Integer((i+som-2)/7);
                 int column  =  (i+som-2)%7;
-                mtblCalendar.setValueAt(i, row, column);
-                boolean appointmentToday = compareDayToAppointmentList(year, month, GregorianCalendar.DAY_OF_MONTH);
+                
+                appointmentToday = compareDayToAppointmentList(year, month, i);
+                //tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(0), new tblCalendarRenderer());
+                if(appointmentToday == true)
+                {
+                	String appointment = "("+i+")";
+                    mtblCalendar.setValueAt(appointment, row, column);
+
+                }
+                else
+                {
+                    mtblCalendar.setValueAt(i, row, column);
+
+                }
+                
             }
         }
         else if (boolWeekView == true)
@@ -465,8 +479,29 @@ public class CalendarProgram{
     {
     	ObservableList<Appointment> list = controller.getAllAppointments();
     	int appointmentSize = list.size();
-    	System.out.println((list.get(2)).getName());
-    	return true;
+    	for (int i = 0; i < appointmentSize; i++)
+    	{
+    		int appointmentDay = (list.get(i)).getStartDay();
+    		//System.out.println("appointmentDay: " + appointmentDay);
+    		
+    		int appointmentMonth = (list.get(i)).getStartMonth()-1;
+    		//System.out.println("appointmentMonth: " + appointmentMonth);
+    		
+    		int appointmentYear = (list.get(i)).getStartYear();
+    		//System.out.println("appointmentYear: " + appointmentYear);
+    		
+    		//System.out.println("day: " + day);
+    		//System.out.println("month: " + month);
+    		//System.out.println("year: " + year);
+    		
+    		if (appointmentDay == day && appointmentMonth == month && appointmentYear == year)
+    		{
+    			//System.out.println("made it");
+    			return true;
+    		}
+    	}
+    	//System.out.println((list.get(2)).getName());
+    	return false;
     }
     
     static class tblCalendarRenderer extends DefaultTableCellRenderer{
@@ -479,9 +514,14 @@ public class CalendarProgram{
                 setBackground(new Color(255, 255, 255));
             }
             if (value != null && boolMonthView == true){
-                if (Integer.parseInt(value.toString()) == realDay && currentMonth == realMonth && currentYear == realYear){ //Today
-                    setBackground(new Color(220, 220, 255));
-                }
+                //if (Integer.parseInt(value.toString()) == realDay && currentMonth == realMonth && currentYear == realYear){ //Today
+                //    setBackground(new Color(220, 220, 255));
+                //}
+            }
+            if (appointmentToday == true)
+            {
+            	System.out.println("made it in the if");
+            	setBackground(new Color(255, 255, 255));
             }
             
             /*
