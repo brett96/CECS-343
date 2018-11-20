@@ -59,22 +59,82 @@ public class Appointment
 		this.name = name;
 	}
 	
-	public int getStart()
+	public int getStartYear()
+	{
+		return startYear;
+	}
+	
+	public void setStartYear(int year)
+	{
+		startYear = year;
+	}
+	
+	public int getStartMonth()
+	{
+		return startMonth;
+	}
+	
+	public void setStartMonth(int month)
+	{
+		startMonth = month;
+	}
+	
+	public int getStartDay()
+	{
+		return startDay;
+	}
+	
+	public void setStartDay(int day)
+	{
+		startDay = day;
+	}
+	
+	public int getStartTime()
 	{
 		return startTime;
 	}
 	
-	public void setStart(int start)
+	public void setStartTime(int start)
 	{
 		startTime = start;
 	}
 	
-	public int getEnd()
+	public int getEndYear()
+	{
+		return endYear;
+	}
+	
+	public void setEndYear(int year)
+	{
+		endYear = year;
+	}
+	
+	public int getEndMonth()
+	{
+		return endMonth;
+	}
+	
+	public void setEndMonth(int month)
+	{
+		endMonth = month;
+	}
+	
+	public int getEndDay()
+	{
+		return endDay;
+	}
+	
+	public void setEndDay(int day)
+	{
+		endDay = day;
+	}
+	
+	public int getEndTime()
 	{
 		return endTime;
 	}
 	
-	public void setEnd(int end)
+	public void setEndTime(int end)
 	{
 		endTime = end;
 	}

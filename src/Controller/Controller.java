@@ -1,5 +1,7 @@
 package Controller;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -131,6 +133,36 @@ public final class Controller
     	this.currentUser = user;
     }
     
+    /**
+     * Exports signed in user's schedule to a csv file
+     * @return
+     * @throws IOException
+     */
+    public String exportSchedule() throws IOException
+    {
+    	if(currentUser != null)
+    	{
+    		FileWriter schedule = new FileWriter(DATA_FILE);
+    		ObservableList<Appointment> userAppointments = controller.getAppointmentsForCurrentUser();
+    		for(Appointment a : userAppointments)
+    		{
+    			schedule.append(Integer.toString(a.getID()) + ", "); 			// Add userID
+    			schedule.append(a.getName() + ", ");							// Add appointment name
+    			schedule.append(Integer.toString(a.getStartYear()) + ", ");		// Start year
+    			schedule.append(Integer.toString(a.getStartMonth()) + ", ");	// Start month
+    			schedule.append(Integer.toString(a.getStartDay()) + ", ");		// Start day 
+    			schedule.append(Integer.toString(a.getEndYear()) + ", ");		// End year
+    			schedule.append(Integer.toString(a.getEndMonth()) + ", ");		// End month
+    			schedule.append(Integer.toString(a.getEndDay()) + ", ");		// End day 	
+    			schedule.append(Integer.toString(a.getStartTime()) + ", ");		// Start Time
+    			schedule.append(Integer.toString(a.getEndTime()) + "\n");		// End Time
+    		}
+    		schedule.close();
+    		return "SUCCESS";
+    	}
+    	return "FAILED";
+    }
+    
     
     /**
      * Sign in method for Sign in scene
@@ -157,7 +189,8 @@ public final class Controller
 					{
 						this.currentUser = controller.allUsersList.get(Integer.valueOf(values.get(0)) - 1);		// Get index by calculating userID-1
 						System.out.println(currentUser.getName() + " is signed in.  Appointments:");
-						System.out.print(controller.getAppointmentsForCurrentUser());
+						System.out.println(controller.getAppointmentsForCurrentUser());
+						System.out.println(controller.exportSchedule());
 						return "SIGNED IN";
 					}
 						
