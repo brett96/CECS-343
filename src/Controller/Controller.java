@@ -23,6 +23,8 @@ public final class Controller
     private static final String[] APPOINTMENTS_FIELD_NAMES = {"userID", "appointmentName", "startYear", "startMonth", "startDay", "endYear", "endMonth", "endDay", "startTime", "endTime", "aID"};
     private static final String[] APPOINTMENTS_FIELD_TYPES = {"INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
     
+    private static final String DATA_FILE = "schedule.csv";
+    
     private ObservableList<User> allUsersList;
     private ObservableList<Appointment> allAppointmentsList;
     private User currentUser;
@@ -41,17 +43,19 @@ public final class Controller
      */
     public static Controller getInstance()
     {
-    	controller = null;
     	if(controller == null)
     	{
     		controller = new Controller();
-    		controller.allUsersList = FXCollections.observableArrayList();
+    		// Initialize observable lists
+    		controller.allUsersList = FXCollections.observableArrayList();	
     		controller.allAppointmentsList = FXCollections.observableArrayList();
     		
     		try
             {
-            	controller.setUsersDB(new DBModel(DB_NAME, USER_TABLE_NAME, USER_FIELD_NAMES, USER_FIELD_TYPES));
-            	ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getAllRecords();
+    			// Initialize users table
+            	controller.setUsersDB(new DBModel(DB_NAME, USER_TABLE_NAME, USER_FIELD_NAMES, USER_FIELD_TYPES));	
+            	// Populate resultsList with all data from users table
+            	ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getAllRecords();	
             	for(ArrayList<String> values : resultsList)
             	{
             		int userID = Integer.parseInt(values.get(0));
@@ -60,11 +64,14 @@ public final class Controller
             		int year = Integer.parseInt(values.get(4));
             		int month = Integer.parseInt(values.get(5));
             		int day = Integer.parseInt(values.get(6));
-            		controller.allUsersList.add(new User(name, email, userID , year, month, day));
+            		// Add each user in db to allUsersList
+            		controller.allUsersList.add(new User(name, email, userID , year, month, day));	
             	}
             	
-            	controller.setAppointmentsDB(new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES));
-            	ArrayList<ArrayList<String>> apptList = controller.getAppointmentsDB().getAllRecords();
+            	// Initialize appointments
+            	controller.setAppointmentsDB(new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES)); 
+            	// Get all appointments
+            	ArrayList<ArrayList<String>> apptList = controller.getAppointmentsDB().getAllRecords();		
             	for(ArrayList<String> values : apptList)
             	{
             		int userID = Integer.parseInt(values.get(0));
@@ -78,10 +85,11 @@ public final class Controller
             		int startTime = Integer.parseInt(values.get(8));
             		int endTime = Integer.parseInt(values.get(9));
             		int aID = Integer.parseInt(values.get(10));
+            		// Add each appointment to list
             		controller.allAppointmentsList.add(new Appointment(userID, name, startYear, startMonth , startDay,  endYear, endMonth, endDay, startTime, endTime, aID));
             	}
             	
-            	
+            	// Set up DBModels
             	controller.usersDB = new DBModel(DB_NAME, USER_TABLE_NAME, USER_FIELD_NAMES, USER_FIELD_TYPES);
             	controller.userAppointmentsDB = new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES);
             	
@@ -129,21 +137,27 @@ public final class Controller
      * @param email
      * @param password
      * @return
+     * @throws SQLException 
      */
-    public String signInUser(String email, String password) {
-		for (User u : controller.allUsersList)
+    public String signInUser(String email, String password) throws SQLException 
+    {
+    	ArrayList<ArrayList<String>> usersList = controller.getUsersDB().getAllRecords();	// Get all data from users table
+		for (ArrayList<String> values : usersList)	// Iterate through every user
 		{
-			String userEmail = u.getEmail();
-			userEmail = "'" + userEmail + "'";
-			if (userEmail.equalsIgnoreCase(email))
+			String userEmail = values.get(2);
+			userEmail = "'" + userEmail + "'";	// match email format from table
+			if (userEmail.equalsIgnoreCase(email))	// Compare user email to given email
 			{
 				try 
 				{
-					ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getRecord(String.valueOf(u.getId()));
+					// Get iterated user's password
+					ArrayList<ArrayList<String>> resultsList = controller.getUsersDB().getRecord(String.valueOf(values.get(0)));
 					String storedPassword = resultsList.get(0).get(3);
-					if (password.equals(storedPassword))
+					if (password.equals(storedPassword))	// Check for match to sign in
 					{
-						this.currentUser = u;
+						this.currentUser = controller.allUsersList.get(Integer.valueOf(values.get(0)) - 1);		// Get index by calculating userID-1
+						System.out.println(currentUser.getName() + " is signed in.  Appointments:");
+						System.out.print(controller.getAppointmentsForCurrentUser());
 						return "SIGNED IN";
 					}
 						
@@ -172,7 +186,8 @@ public final class Controller
     	{
     		if(currentUser != null)
     		{
-    			controller.getUsersDB().changeName(currentUser.getEmail(), newName);
+    			String currentEmail = "'" + currentUser.getEmail() + "'";
+    			controller.getUsersDB().changeName(currentEmail, newName);
     			currentUser.setName(newName);
     			return "SUCCESS";
     		}
@@ -288,24 +303,34 @@ public final class Controller
     	return "FAILED";
     }
     
+    /**
+     * Reset birthday of specified user
+     * @param email = user's email
+     * @param currentBDay = user's current birthday
+     * @param year = new birthday year
+     * @param month = new birthday month
+     * @param day = new birthday day
+     * @return status
+     */
     public String resetBirthday(String email, LocalDate currentBDay, int year, int month, int day)
     {
     	try
     	{
-	    	if(currentUser != null)
+	    	if(currentUser != null)		// If current user isn't null (someone is signed in), automatically change current's
 	    	{
 	    		controller.getUsersDB().changeBirthday(email, year, month, day);
 	    		currentUser.setBirthday(LocalDate.of(year, month, day));
 	    		return "SUCCESS";
 	    	}
-	    	else
+	    	else	// If user wants to reset birthday but is not logged in
 	    	{
-	    		for(User u : controller.allUsersList)
+	    		for(User u : controller.allUsersList)	// Iterate through all users
 	        	{
 	    			//System.out.println("u.getEmail() = " + u.getEmail() + "; email = " + email);
 	    			String userEmail = u.getEmail();
 	    			userEmail = "'" + userEmail + "'";
-	        		if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(currentBDay))
+	    			// Compares user iteration info against provided info
+	        		if(userEmail.equalsIgnoreCase(email) && u.getBirthday().equals(currentBDay))	
 	        		{
 	        			controller.getUsersDB().changeBirthday(email, year, month, day);
 	        			u.setBirthday(LocalDate.of(year, month, day));
@@ -386,11 +411,17 @@ public final class Controller
     	}
     }
     
-    public String resetAppointmentEndTime(int id, int start)
+    /**
+     * Set end time of appointment w/ given id
+     * @param id = appointment ID of appointment to be modified
+     * @param end = end time
+     * @return status
+     */
+    public String resetAppointmentEndTime(int id, int end)
     {
     	try
     	{
-    		controller.getAppointmentsDB().changeAppointmentEndTime(id, start);
+    		controller.getAppointmentsDB().changeAppointmentEndTime(id, end);
     		return "SUCCESS";
     	}
     	catch (Exception e)
@@ -424,23 +455,24 @@ public final class Controller
      */
     public String signUpUser(String name, String email, String password, int year, int month, int day)
     {
-    	for(User user : controller.allUsersList)
+    	for(User user : controller.allUsersList)	// Check for email already in use
     	{
     		String userEmail = user.getEmail();
 			userEmail = "'" + userEmail + "'";
     		if(userEmail.equalsIgnoreCase(email))
     			return "Email already exists";
     	}
-    	// Add user to database
+    	
+    	// Array of values to be inserted into db
     	String[] values = {name, email, password, Integer.toString(year), Integer.toString(month), Integer.toString(day)};
-    	System.out.println(email);
+    	//System.out.println(email);
     	try
     	{
-    		int id = controller.getUsersDB().createRecord(Arrays.copyOfRange
+    		int id = controller.getUsersDB().createRecord(Arrays.copyOfRange	//  Try inserting user into db & get userID
     				(USER_FIELD_NAMES, 1, USER_FIELD_NAMES.length), values);
-    		User newUser = new User(name, email, id, year, month, day);
+    		User newUser = new User(name, email, id, year, month, day);		//  Add new user to allUsersList
     		controller.allUsersList.add(newUser);
-    		controller.currentUser = newUser;
+    		controller.currentUser = newUser;		// Set current user to new user
     		return "SUCCESS";
     	}
     	catch(SQLException e)
@@ -469,13 +501,15 @@ public final class Controller
     	if (currentUser != null) 
     	{
     		int id = currentUser.getId();
+    		// Array of passed appointment parameters to be inserted to db
 	    	String[] values = {Integer.toString(id), name, Integer.toString(startYear), Integer.toString(startMonth), Integer.toString(startDay), Integer.toString(endYear), Integer.toString(endMonth), Integer.toString(endDay), Integer.toString(startTime), Integer.toString(endTime)};
 	    	try
 	    	{
+	    		// Add appointment to db, get aID
 	    		int aID = controller.getAppointmentsDB().insertAppointment(Arrays.copyOfRange(APPOINTMENTS_FIELD_NAMES, 0, APPOINTMENTS_FIELD_NAMES.length - 1), values);
-	    		//int id = currentUser.getId();
+	    		// Add appointment to allAppointmentsList
 	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID);
-	    		controller.allAppointmentsList.add(newAppointment);  // Causes null pointer for some reason
+	    		controller.allAppointmentsList.add(newAppointment); 
 	    	}
 	    	catch(SQLException e)
 	    	{
@@ -511,10 +545,47 @@ public final class Controller
 		return usersDB;
 	}
 	
+	/**
+	 * Returns appointment table
+	 * @return
+	 */
 	public DBModel getAppointmentsDB()
 	{
 		return userAppointmentsDB;
 	}
+	
+	/**
+	 * If currentUser is set, this will get all of the appointments from the db that contain the user's ID
+	 * @return
+	 */
+	public ObservableList<Appointment> getAppointmentsForCurrentUser()
+    {
+        ObservableList<Appointment> userAppointments = FXCollections.observableArrayList();	// ObservableList that is returned, containing all the current user's appointments
+        if (currentUser != null)
+        {
+            try {
+                ArrayList<ArrayList<String>> resultsList = controller.userAppointmentsDB.getRecord(String.valueOf(currentUser.getId()));	// Gets current user's appointments
+                ArrayList<Integer> aIDs = new ArrayList<>();	// ArrayList of found appointment IDs
+                for (ArrayList<String> values : resultsList)	// Iterate through every appointment
+                {
+                    int uId = Integer.parseInt(values.get(0));	// Get userID of current appointment
+                    for (Appointment a : controller.allAppointmentsList)	// Iterate through all appointments
+                    {
+                        if (a.getID() == uId && !aIDs.contains(a.getAID()))	// Checks for matching userID's and that aID hasn't already been added 
+                        {
+                            userAppointments.add(a);	// Adds appointment to current user's appointment list
+                            aIDs.add(a.getAID());		// Adds appointment ID to aIDs array to avoid duplicates
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        else
+        	System.out.println("Current user is set to null");
+        return userAppointments;
+    }
 
 	/**
 	 * Sets users database table
