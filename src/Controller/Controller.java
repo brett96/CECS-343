@@ -190,7 +190,6 @@ public final class Controller
 						this.currentUser = controller.allUsersList.get(Integer.valueOf(values.get(0)) - 1);		// Get index by calculating userID-1
 						System.out.println(currentUser.getName() + " is signed in.  Appointments:");
 						System.out.println(controller.getAppointmentsForCurrentUser());
-						System.out.println(controller.exportSchedule());
 						return "SIGNED IN";
 					}
 						

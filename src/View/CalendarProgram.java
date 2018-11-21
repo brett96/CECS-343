@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -171,35 +172,71 @@ public class CalendarProgram{
         
         JMenuItem makeAppointmentButton = new JMenuItem(new AbstractAction("make appointment") {
         	public void actionPerformed(ActionEvent e) {
-        		String name = JOptionPane.showInputDialog(pnlCalendar, "Enter your appointment name:", "Name", JOptionPane.QUESTION_MESSAGE);
-        		int startYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start year of your appointment:", "Start Year", JOptionPane.QUESTION_MESSAGE));
-        		int startMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start month of your appointment:", "Start Month", JOptionPane.QUESTION_MESSAGE));
-        		int startDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start day of your appointment:", "Start Day", JOptionPane.QUESTION_MESSAGE));
-        		int endYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end year of your appointment:", "End Year", JOptionPane.QUESTION_MESSAGE));
-        		int endMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end month of your appointment:", "End Month", JOptionPane.QUESTION_MESSAGE));
-        		int endDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end day of your appointment:", "End Day", JOptionPane.QUESTION_MESSAGE));
-        		int startTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start time of your appointment in millitary time(Eg. 7:30 AM = 0730):", "End Year", JOptionPane.QUESTION_MESSAGE));
-        		int endTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end time of your appointment in millitary time(Eg. 9:30 PM = 2130):", "End Year", JOptionPane.QUESTION_MESSAGE));
-
-        		controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
-        		refreshCalendar(currentMonth, currentYear);
+        		if(controller.getCurrentUser() != null){
+	        		String name = JOptionPane.showInputDialog(pnlCalendar, "Enter your appointment name:", "Name", JOptionPane.QUESTION_MESSAGE);
+	        		int startYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start year of your appointment:", "Start Year", JOptionPane.QUESTION_MESSAGE));
+	        		int startMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start month of your appointment:", "Start Month", JOptionPane.QUESTION_MESSAGE));
+	        		int startDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start day of your appointment:", "Start Day", JOptionPane.QUESTION_MESSAGE));
+	        		int endYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end year of your appointment:", "End Year", JOptionPane.QUESTION_MESSAGE));
+	        		int endMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end month of your appointment:", "End Month", JOptionPane.QUESTION_MESSAGE));
+	        		int endDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end day of your appointment:", "End Day", JOptionPane.QUESTION_MESSAGE));
+	        		int startTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start time of your appointment in millitary time(Eg. 7:30 AM = 0730):", "End Year", JOptionPane.QUESTION_MESSAGE));
+	        		int endTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end time of your appointment in millitary time(Eg. 9:30 PM = 2130):", "End Year", JOptionPane.QUESTION_MESSAGE));
+	
+	        		controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
+	        		refreshCalendar(currentMonth, currentYear);
+        		}
+        		else {
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
         	}
         });
         appointmentMenu.add(makeAppointmentButton);
         
         JMenuItem cancelAppointmentButton = new JMenuItem(new AbstractAction("cancel appointment") {
         	public void actionPerformed(ActionEvent e) {
-        		System.out.println("changeAppointmentButton");
+        		if(controller.getCurrentUser() != null)
+        		{
+        			System.out.println("changeAppointmentButton");
+        		}
+        		else {
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
         	}
         });
         appointmentMenu.add(cancelAppointmentButton);
         
         JMenuItem changeAppointmentButton = new JMenuItem(new AbstractAction("change appointment") {
         	public void actionPerformed(ActionEvent e) {
-        		System.out.println("changeAppointmentButton");
+        		if(controller.getCurrentUser() != null)
+        		{
+        			System.out.println("changeAppointmentButton");
+        		}
+        		else {
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
         	}
         });
         appointmentMenu.add(changeAppointmentButton);
+        
+        JMenuItem exportSchedule = new JMenuItem(new AbstractAction("Export Schedule") {
+        	public void actionPerformed(ActionEvent e) {
+        		if(controller.getCurrentUser() != null)
+	        	{
+	        		try {
+						controller.exportSchedule();
+						System.out.println("Schedule Exported");
+					} 
+	        		catch (IOException e1) {
+						e1.printStackTrace();
+					}
+	        	}
+        		else {
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
+        	}
+        });
+        appointmentMenu.add(exportSchedule);
         menubar.add(appointmentMenu);
         
         //calendar view menu bar
