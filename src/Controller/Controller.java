@@ -1,5 +1,7 @@
 package Controller;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -25,13 +27,19 @@ public final class Controller
     private static final String[] APPOINTMENTS_FIELD_NAMES = {"userID", "appointmentName", "startYear", "startMonth", "startDay", "endYear", "endMonth", "endDay", "startTime", "endTime", "aID"};
     private static final String[] APPOINTMENTS_FIELD_TYPES = {"INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
     
+    private static final String USER_APPOINTMENTS_TABLE_NAME = "userAppointments";
+    private static final String[] USER_APPOINTMENTS_FIELD_NAMES = {"userID", "aID"};
+    private static final String[] USER_APPOINTMENTS_FIELD_TYPES = {"INTEGER", "INTEGER"};
+    
     private static final String DATA_FILE = "schedule.csv";
     
     private ObservableList<User> allUsersList;
     private ObservableList<Appointment> allAppointmentsList;
+
     private User currentUser;
     //private DBModel DB;
     private DBModel usersDB;
+    private DBModel appointmentsDB;
     private DBModel userAppointmentsDB;
     
     /**
@@ -91,10 +99,12 @@ public final class Controller
             		controller.allAppointmentsList.add(new Appointment(userID, name, startYear, startMonth , startDay,  endYear, endMonth, endDay, startTime, endTime, aID));
             	}
             	
+            	//controller.setUserAppointmentsDB(new DBModel(DB_NAME, USER_APPOINTMENTS_TABLE_NAME, USER_APPOINTMENTS_FIELD_NAMES, USER_APPOINTMENTS_FIELD_TYPES));
+            	
             	// Set up DBModels
             	controller.usersDB = new DBModel(DB_NAME, USER_TABLE_NAME, USER_FIELD_NAMES, USER_FIELD_TYPES);
-            	controller.userAppointmentsDB = new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES);
-            	
+            	controller.appointmentsDB = new DBModel(DB_NAME, APPOINTMENTS_TABLE_NAME, APPOINTMENTS_FIELD_NAMES, APPOINTMENTS_FIELD_TYPES);
+            	controller.userAppointmentsDB = new DBModel(DB_NAME, USER_APPOINTMENTS_TABLE_NAME, USER_APPOINTMENTS_FIELD_NAMES, USER_APPOINTMENTS_FIELD_TYPES);
             }
     		catch (SQLException e)
             {
@@ -144,7 +154,14 @@ public final class Controller
     	{
     		FileWriter schedule = new FileWriter(DATA_FILE);
     		ObservableList<Appointment> userAppointments = controller.getAppointmentsForCurrentUser();
-    		for(Appointment a : userAppointments)
+    		
+    		// First line = User Info
+			schedule.append(currentUser.getName() + ", " + currentUser.getEmail() + ", " + Integer.toString(currentUser.getId()) + ", " 
+					+ Integer.toString(currentUser.getYear()) + ", " + Integer.toString(currentUser.getMonth()) + ", " 
+					+ Integer.toString(currentUser.getDay()) + "\n");
+    	
+			// Remaining lines are appointments
+			for(Appointment a : userAppointments)
     		{
     			schedule.append(Integer.toString(a.getID()) + ", "); 			// Add userID
     			schedule.append(a.getName() + ", ");							// Add appointment name
@@ -155,12 +172,143 @@ public final class Controller
     			schedule.append(Integer.toString(a.getEndMonth()) + ", ");		// End month
     			schedule.append(Integer.toString(a.getEndDay()) + ", ");		// End day 	
     			schedule.append(Integer.toString(a.getStartTime()) + ", ");		// Start Time
-    			schedule.append(Integer.toString(a.getEndTime()) + "\n");		// End Time
+    			schedule.append(Integer.toString(a.getEndTime()) + ", ");		// End Time
+    			schedule.append(Integer.toString(a.getAID()) + "\n");
     		}
     		schedule.close();
     		return "SUCCESS";
     	}
     	return "FAILED";
+    }
+    
+    public String importSchedule(String infile) throws IOException, SQLException
+    {
+    	BufferedReader schedule = new BufferedReader(new FileReader(infile));
+    	String line = "", name = "";
+    	int userID, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID;
+
+    	line = schedule.readLine();				// Get user info from 1st line
+    	String[] userVals = line.split(", ");	// Split up data
+    	name = userVals[0];
+    	String email = userVals[1];
+    	int id = Integer.valueOf(userVals[2]);
+    	int year = Integer.valueOf(userVals[3]);
+    	int month = Integer.valueOf(userVals[4]);
+    	int day = Integer.valueOf(userVals[5]);
+    	User newUser = new User(name, email, id, year, month, day);
+    	boolean merge = false;
+    	for(User u : allUsersList)
+    	{
+    		if(newUser.equals(u))
+    		{
+    			// Assign u's userID & each imported aID into userAppointmentsDB
+    			merge = true;
+    		}
+    		
+    	}
+    	
+    	ArrayList<ArrayList<String>> resultsList = controller.getUserAppointmentsDB().getAllRecords();
+    	while((line = schedule.readLine()) != null)
+    	{
+    		String[] values = line.split(", ");
+    		
+    		userID = Integer.valueOf(values[0]);
+    		name = values[1];
+    		startYear = Integer.valueOf(values[2]);
+    		startMonth = Integer.valueOf(values[3]);
+    		startDay = Integer.valueOf(values[4]);
+    		endYear = Integer.valueOf(values[5]);
+    		endMonth = Integer.valueOf(values[6]);
+    		endDay = Integer.valueOf(values[7]);
+    		startTime = Integer.valueOf(values[8]);
+    		endTime = Integer.valueOf(values[9]);
+    		aID = Integer.valueOf(values[10]);
+    		
+    		boolean exists = false;	// Check if appointment is already in db
+    		Appointment newAppt = new Appointment(userID, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID);
+  
+    		
+    		for(Appointment a : allAppointmentsList)
+    		{
+    			if(a.equals(newAppt))
+    			{
+    				exists = true;
+    				String[] cuaVals = {Integer.toString(currentUser.getId()), Integer.toString(a.getAID())};	// current user appointment vals
+    				String[] uaVals = {values[0], Integer.toString(a.getAID())};	// user appointment vals
+    				// ArrayList of current userID & checked aID
+    				ArrayList<String> currentUAs = new ArrayList<String>(Arrays.asList(Integer.toString(currentUser.getId()), Integer.toString(a.getAID())));
+    				if(!resultsList.contains(currentUAs))
+    				{
+    					controller.getUserAppointmentsDB().insertAppointment(USER_APPOINTMENTS_FIELD_NAMES, cuaVals);
+    				}
+    				
+    				ArrayList<String> uAList = new ArrayList<String>(Arrays.asList(Integer.toString(userID), Integer.toString(a.getAID())));
+    				if(merge && (!resultsList.contains(uAList)))	// If user is in db:
+    					controller.getUserAppointmentsDB().insertAppointment(USER_APPOINTMENTS_FIELD_NAMES, uaVals);	// Add imported userID & aID to userAppointments
+    				
+    			}
+    		}
+    		
+    		if(!exists)
+    		{
+    			int addAppt = controller.getAppointmentsDB().insertAppointment(APPOINTMENTS_FIELD_NAMES, values);	
+    			String[] cuaVals = {Integer.toString(currentUser.getId()), Integer.toString(addAppt)};
+				String[] uaVals = {values[0], Integer.toString(addAppt)};
+				controller.getUserAppointmentsDB().insertAppointment(USER_APPOINTMENTS_FIELD_NAMES, cuaVals);
+				if(merge)	// If user is in db:
+					controller.getUserAppointmentsDB().insertAppointment(USER_APPOINTMENTS_FIELD_NAMES, uaVals);	// Add imported userID & aID to userAppointments
+    			allAppointmentsList.add(new Appointment(currentUser.getDay(), name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, addAppt));
+    		}	
+    	}
+    	schedule.close();
+    	return "SUCCESS";
+    }
+    
+    
+    /**
+     * Signs up a user and adds user data to appropriate tables
+     * @param name
+     * @param email
+     * @param password
+     * @return
+     */
+    public String signUpUser(String name, String email, String password, int year, int month, int day)
+    {
+    	for(User user : controller.allUsersList)	// Check for email already in use
+    	{
+    		String userEmail = user.getEmail();
+			userEmail = "'" + userEmail + "'";
+    		if(userEmail.equalsIgnoreCase(email))
+    			return "Email already exists";
+    	}
+    	
+    	// Array of values to be inserted into db
+    	String[] values = {name, email, password, Integer.toString(year), Integer.toString(month), Integer.toString(day)};
+    	//System.out.println(email);
+    	try
+    	{
+    		int id = controller.getUsersDB().createRecord(Arrays.copyOfRange	//  Try inserting user into db & get userID
+    				(USER_FIELD_NAMES, 1, USER_FIELD_NAMES.length), values);
+    		User newUser = new User(name, email, id, year, month, day);		//  Add new user to allUsersList
+    		controller.allUsersList.add(newUser);
+    		controller.currentUser = newUser;		// Set current user to new user
+    		
+    		
+//    		try {
+//				System.out.println(controller.importSchedule(DATA_FILE));
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+    		
+    		return "SUCCESS";
+    	}
+    	catch(SQLException e)
+    	{
+    		e.printStackTrace();
+    		return "Account Not Created";
+    	}
+    	
     }
     
     
@@ -204,6 +352,47 @@ public final class Controller
 		}
 		return "Email address not found.  Please try again.";
 	}
+    
+    
+    /**
+     * Adds appointment to appointment database
+     * @param name
+     * @param startYear
+     * @param startMonth
+     * @param startDay
+     * @param endYear
+     * @param endMonth
+     * @param endDay
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public String addAppointment(String name, int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int startTime, int endTime)
+    {
+    	if (currentUser != null) 
+    	{
+    		int id = currentUser.getId();
+    		// Array of passed appointment parameters to be inserted to db
+	    	String[] values = {Integer.toString(id), name, Integer.toString(startYear), Integer.toString(startMonth), Integer.toString(startDay), Integer.toString(endYear), Integer.toString(endMonth), Integer.toString(endDay), Integer.toString(startTime), Integer.toString(endTime)};
+	    	try
+	    	{
+	    		// Add appointment to db, get aID
+	    		int aID = controller.getAppointmentsDB().insertAppointment(Arrays.copyOfRange(APPOINTMENTS_FIELD_NAMES, 0, APPOINTMENTS_FIELD_NAMES.length - 1), values);
+	    		// Add appointment to allAppointmentsList
+	    		String[] uaValues = {Integer.toString(id), Integer.toString(aID)};
+	    		controller.getUserAppointmentsDB().createRecord(USER_APPOINTMENTS_FIELD_NAMES, uaValues);
+	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID);
+	    		controller.allAppointmentsList.add(newAppointment); 
+	    	}
+	    	catch(SQLException e)
+	    	{
+	    		e.printStackTrace();
+	    		return "Account Not Created";
+	    	}
+	    	return "SUCCESS";
+    	}
+    	return "You must log in first";
+    }
     
     /**
      * If a user is already signed in, the passed parameters are not checked
@@ -479,81 +668,6 @@ public final class Controller
 //    }
     
     /**
-     * Signs up a user and adds user data to appropriate tables
-     * @param name
-     * @param email
-     * @param password
-     * @return
-     */
-    public String signUpUser(String name, String email, String password, int year, int month, int day)
-    {
-    	for(User user : controller.allUsersList)	// Check for email already in use
-    	{
-    		String userEmail = user.getEmail();
-			userEmail = "'" + userEmail + "'";
-    		if(userEmail.equalsIgnoreCase(email))
-    			return "Email already exists";
-    	}
-    	
-    	// Array of values to be inserted into db
-    	String[] values = {name, email, password, Integer.toString(year), Integer.toString(month), Integer.toString(day)};
-    	//System.out.println(email);
-    	try
-    	{
-    		int id = controller.getUsersDB().createRecord(Arrays.copyOfRange	//  Try inserting user into db & get userID
-    				(USER_FIELD_NAMES, 1, USER_FIELD_NAMES.length), values);
-    		User newUser = new User(name, email, id, year, month, day);		//  Add new user to allUsersList
-    		controller.allUsersList.add(newUser);
-    		controller.currentUser = newUser;		// Set current user to new user
-    		return "SUCCESS";
-    	}
-    	catch(SQLException e)
-    	{
-    		e.printStackTrace();
-    		return "Account Not Created";
-    	}
-    	
-    }
-    
-    /**
-     * Adds appointment to appointment database
-     * @param name
-     * @param startYear
-     * @param startMonth
-     * @param startDay
-     * @param endYear
-     * @param endMonth
-     * @param endDay
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    public String addAppointment(String name, int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int startTime, int endTime)
-    {
-    	if (currentUser != null) 
-    	{
-    		int id = currentUser.getId();
-    		// Array of passed appointment parameters to be inserted to db
-	    	String[] values = {Integer.toString(id), name, Integer.toString(startYear), Integer.toString(startMonth), Integer.toString(startDay), Integer.toString(endYear), Integer.toString(endMonth), Integer.toString(endDay), Integer.toString(startTime), Integer.toString(endTime)};
-	    	try
-	    	{
-	    		// Add appointment to db, get aID
-	    		int aID = controller.getAppointmentsDB().insertAppointment(Arrays.copyOfRange(APPOINTMENTS_FIELD_NAMES, 0, APPOINTMENTS_FIELD_NAMES.length - 1), values);
-	    		// Add appointment to allAppointmentsList
-	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID);
-	    		controller.allAppointmentsList.add(newAppointment); 
-	    	}
-	    	catch(SQLException e)
-	    	{
-	    		e.printStackTrace();
-	    		return "Account Not Created";
-	    	}
-	    	return "SUCCESS";
-    	}
-    	return "You must log in first";
-    }
-    
-    /**
      * Returns ObservableList of all user data
      * @return
      */
@@ -583,6 +697,11 @@ public final class Controller
 	 */
 	public DBModel getAppointmentsDB()
 	{
+		return appointmentsDB;
+	}
+	
+	public DBModel getUserAppointmentsDB()
+	{
 		return userAppointmentsDB;
 	}
 	
@@ -596,7 +715,7 @@ public final class Controller
         if (currentUser != null)
         {
             try {
-                ArrayList<ArrayList<String>> resultsList = controller.userAppointmentsDB.getRecord(String.valueOf(currentUser.getId()));	// Gets current user's appointments
+                ArrayList<ArrayList<String>> resultsList = controller.appointmentsDB.getAppointments(String.valueOf(currentUser.getId()));	// Gets current user's appointments
                 ArrayList<Integer> aIDs = new ArrayList<>();	// ArrayList of found appointment IDs
                 for (ArrayList<String> values : resultsList)	// Iterate through every appointment
                 {
@@ -630,7 +749,12 @@ public final class Controller
 	
 	public void setAppointmentsDB(DBModel appointmentsDB)
 	{
-		this.userAppointmentsDB = appointmentsDB;
+		this.appointmentsDB = appointmentsDB;
+	}
+	
+	public void setUserAppointmentsDB(DBModel userAppointmentsDB)
+	{
+		this.userAppointmentsDB = userAppointmentsDB;
 	}
 }
     

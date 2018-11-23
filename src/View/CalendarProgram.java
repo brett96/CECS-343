@@ -237,6 +237,29 @@ public class CalendarProgram{
         	}
         });
         appointmentMenu.add(exportSchedule);
+        
+        JMenuItem importSchedule = new JMenuItem(new AbstractAction("Import Schedule") {
+        	public void actionPerformed(ActionEvent e) {
+        		if(controller.getCurrentUser() != null)
+        		{
+        			try {
+        				System.out.println(controller.importSchedule("schedule.csv"));
+        				System.out.println("Schedule Imported");	
+        			}
+        			catch (IOException e1) {
+        				e1.printStackTrace();
+        			} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+        		}
+        		else {
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
+        	}
+        });
+        appointmentMenu.add(importSchedule);
+        
         menubar.add(appointmentMenu);
         
         //calendar view menu bar
