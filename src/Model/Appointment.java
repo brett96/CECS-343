@@ -144,10 +144,15 @@ public class Appointment
 	}
 	
 	@Override
-	public String toString() {
+	public String toString() 
+	{
+		return ("Day: " + startDay + ", " + name);
+		/*
 		return "Appointment [id=" + id + ", name=" + name + ", startYear=" + startYear + ", startMonth=" + startMonth
 				+ ", startDay=" + startDay + ", endYear=" + endYear + ", endMonth=" + endMonth + ", endDay=" + endDay
 				+ ", startTime=" + startTime + ", endTime=" + endTime + ", aID=" + aID + "]\n";
+		*/
 	}
+	
 	
 }

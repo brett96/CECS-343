@@ -30,6 +30,7 @@ public class CalendarProgram{
     static int realYear, realMonth, realDay, currentYear, currentMonth;
     static boolean boolDayView, boolWeekView, boolMonthView;
     static boolean appointmentToday;
+    static Appointment userAppointment;
     
     public static void main (String args[]){
     	boolMonthView = true;
@@ -43,7 +44,7 @@ public class CalendarProgram{
         
         //Prepare frame
         frmMain = new JFrame ("Calendar"); //Create frame
-        frmMain.setSize(400, 400); //Set size to 400x400 pixels
+        frmMain.setSize(330, 375);
         pane = frmMain.getContentPane(); //Get content pane
         pane.setLayout(null); //Apply null layout
         frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Close when X is clicked
@@ -68,7 +69,7 @@ public class CalendarProgram{
         		System.out.println(controller.signUpUser(username, email, password, bYear, bMonth, bDay));
         		//System.out.println(controller.signInUser(email, password));
         		
-        
+        		
         	}
         });
         accountMenu.add(createAccountButton);
@@ -86,9 +87,7 @@ public class CalendarProgram{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-        		//System.out.println(controller.signInUser(email, password));
-        		
-        
+                refreshCalendar(currentMonth, currentYear);  
         	}
         });
         accountMenu.add(loginButton);
@@ -297,6 +296,7 @@ public class CalendarProgram{
         tblCalendar = new JTable(mtblCalendar);
         stblCalendar = new JScrollPane(tblCalendar);
         pnlCalendar = new JPanel(null);
+       
         
         //Set border
         pnlCalendar.setBorder(BorderFactory.createTitledBorder("Calendar"));
@@ -367,10 +367,10 @@ public class CalendarProgram{
         //Single cell selection
         tblCalendar.setColumnSelectionAllowed(true);
         tblCalendar.setRowSelectionAllowed(true);
-        tblCalendar.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         //Set row/column count
         tblCalendar.setRowHeight(38);
+        tblCalendar.setCellSelectionEnabled(true);
         
         if (boolMonthView == true)
         {
@@ -380,7 +380,7 @@ public class CalendarProgram{
         else if (boolWeekView == true)
         {
             mtblCalendar.setColumnCount(1);
-            mtblCalendar.setRowCount(4);
+            mtblCalendar.setRowCount(1);
         }   
         else if (boolDayView == true)
         {
@@ -400,13 +400,14 @@ public class CalendarProgram{
     }
     
     public static void refreshCalendar(int month, int year){
+
         //Variables
         String[] months =  {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
         int nod, som; //Number Of Days, Start Of Month
         
         if (boolMonthView == true)
         {
-        	
+        	mtblCalendar.setRowCount(6);
         	mtblCalendar.setColumnCount(0);
             String[] headers = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}; //All headers
             for (int i=0; i<7; i++){
@@ -437,6 +438,7 @@ public class CalendarProgram{
         
         if(boolMonthView == true)
         {
+ 
             //Clear table
             for (int i=0; i<6; i++){
                 for (int j=0; j<7; j++){
@@ -447,9 +449,9 @@ public class CalendarProgram{
         else if (boolWeekView == true)
         {
             //Clear table
-            for (int i=0; i<4; i++){
-                    mtblCalendar.setValueAt(null, i, 0);
-            }
+            //for (int i=0; i<4; i++){
+                   // mtblCalendar.setValueAt(null, i, 0);
+            //}
         }
         else if (boolDayView == true)
         {
@@ -491,20 +493,91 @@ public class CalendarProgram{
         }
         else if (boolWeekView == true)
         {
-        	//mtblCalendar.setRowCount(4);
+        	boolean firstRunOne = true;
+        	boolean firstRunTwo = true;
+        	boolean firstRunThree = true;
+        	boolean firstRunFour = true;
+        	boolean firstRunFive = true;
+        	
+        	int rowCount = 0;
+        	mtblCalendar.setRowCount(100);
         	tblCalendar.setRowHeight(200/4);
+        	
             //Draw calendar week view
-            for (int i=0; i<4; i++){
+            for (int i=1; i<=nod; i++)
+            {
+            	System.out.println("Row count: " + rowCount + " on iteration: " + i);
+            	//mtblCalendar.setRowCount(rowCount);
+            	int row = new Integer((i+som-2)/7);
                 int column  = 0;
-                mtblCalendar.setValueAt("Appointments for week " + (i+1), i, column);
+                
+                appointmentToday = compareDayToAppointmentList(year, month, i);
+                
+                if(row  == 0 && firstRunOne == true && appointmentToday == true)
+                {
+                	mtblCalendar.setValueAt("Appointments for week " + (1), rowCount, column);
+                	rowCount++;
+                	firstRunOne = false;
+                }
+                if(row  == 1 && firstRunTwo == true && appointmentToday == true)
+                {
+                	mtblCalendar.setValueAt("Appointments for week " + (2), rowCount, column);
+                	rowCount++;
+                	firstRunTwo = false;
+                }
+                if(row  == 2 && firstRunThree == true && appointmentToday == true)
+                {
+                	mtblCalendar.setValueAt("Appointments for week " + (3), rowCount, column);
+                	rowCount++;
+                	firstRunThree = false;
+                }
+                if(row  == 3 && firstRunFour == true && appointmentToday == true)
+                {
+                	mtblCalendar.setValueAt("Appointments for week " + (4), rowCount, column);
+                	rowCount++;
+                	firstRunFour = false;
+                }
+                if(row  == 4 && firstRunFive == true && appointmentToday == true)
+                {
+                	mtblCalendar.setValueAt("Appointments for week " + (5), rowCount, column);
+                	rowCount++;
+                	firstRunFive = false;
+                }
+                
+                if(appointmentToday == true && controller.getCurrentUser() != null)
+                {
+                    mtblCalendar.setValueAt(userAppointment, rowCount, column);
+                    rowCount++;
+                }
             }
+            
         }
         else if (boolDayView == true)
         {
+        	boolean firstRunOne = true;
+        	boolean firstRunTwo = true;
+        	boolean firstRunThree = true;
+        	boolean firstRunFour = true;
+        	boolean firstRunFive = true;
+        	
+        	int rowCount = 0;
+        	mtblCalendar.setRowCount(100);
+        	tblCalendar.setRowHeight(200/4);
+        	
             //Draw calendar week view
-            for (int i=0; i<1; i++){
+            for (int i=1; i<=nod; i++)
+            {
+            	System.out.println("Row count: " + rowCount + " on iteration: " + i);
+            	//mtblCalendar.setRowCount(rowCount);
+            	int row = new Integer((i+som-2)/7);
                 int column  = 0;
-                mtblCalendar.setValueAt("Appointments for day " + realDay + ": ", i, column);
+                
+                appointmentToday = compareDayToAppointmentList(year, month, i);             
+                if(appointmentToday == true && controller.getCurrentUser() != null)
+                {
+                    mtblCalendar.setValueAt(userAppointment, rowCount, column);
+                    rowCount++;
+                }
             }
         }
         
@@ -514,30 +587,26 @@ public class CalendarProgram{
     
     static boolean compareDayToAppointmentList(int year, int month, int day)
     {
-    	ObservableList<Appointment> list = controller.getAllAppointments();
-    	int appointmentSize = list.size();
-    	for (int i = 0; i < appointmentSize; i++)
+    	if (controller.getCurrentUser() == null)
     	{
-    		int appointmentDay = (list.get(i)).getStartDay();
-    		//System.out.println("appointmentDay: " + appointmentDay);
-    		
-    		int appointmentMonth = (list.get(i)).getStartMonth()-1;
-    		//System.out.println("appointmentMonth: " + appointmentMonth);
-    		
-    		int appointmentYear = (list.get(i)).getStartYear();
-    		//System.out.println("appointmentYear: " + appointmentYear);
-    		
-    		//System.out.println("day: " + day);
-    		//System.out.println("month: " + month);
-    		//System.out.println("year: " + year);
-    		
-    		if (appointmentDay == day && appointmentMonth == month && appointmentYear == year)
-    		{
-    			//System.out.println("made it");
-    			return true;
-    		}
-    	}
-    	//System.out.println((list.get(2)).getName());
+    		return false;
+    	} //end if
+    	else
+    	{
+        	ObservableList<Appointment> list = controller.getAllAppointments();
+        	int appointmentSize = list.size();
+        	for (int i = 0; i < appointmentSize; i++)
+        	{
+        		int appointmentDay = (list.get(i)).getStartDay();   		
+        		int appointmentMonth = (list.get(i)).getStartMonth()-1;
+        		int appointmentYear = (list.get(i)).getStartYear();
+        		if (appointmentDay == day && appointmentMonth == month && appointmentYear == year)
+        		{
+        			userAppointment = list.get(i);
+        			return true;
+        		} //end if
+        	}
+    	} //end else
     	return false;
     }
     
@@ -550,25 +619,14 @@ public class CalendarProgram{
             else{ //Week
                 setBackground(new Color(255, 255, 255));
             }
-            if (value != null && boolMonthView == true){
-                //if (Integer.parseInt(value.toString()) == realDay && currentMonth == realMonth && currentYear == realYear){ //Today
-                //    setBackground(new Color(220, 220, 255));
-                //}
-            }
-            if (appointmentToday == true)
+            if (value != null && boolMonthView == true)
             {
-            	System.out.println("made it in the if");
-            	setBackground(new Color(255, 255, 255));
+            	//int val =  (Integer.parseInt(value.toString()));
+            	String str = value.toString().replaceAll("\\D+","");
+                if (Integer.parseInt(str.toString()) == realDay && currentMonth == realMonth && currentYear == realYear){ //Today
+                    setBackground(new Color(220, 220, 255));
+                }
             }
-            
-            /*
-             * 
-             * 
-             * TODO:  Insert the color block for appointments here and refresh the calendar after an appointment has been added
-             * 
-             * 
-             * 
-             */
             
             setBorder(null);
             setForeground(Color.black);
@@ -594,7 +652,7 @@ public class CalendarProgram{
                 currentMonth = 0;
                 currentYear += 1;
             }
-            else{ //Foward one month
+            else{ //Forward one month
                 currentMonth += 1;
             }
             refreshCalendar(currentMonth, currentYear);
