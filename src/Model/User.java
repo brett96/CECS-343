@@ -6,15 +6,16 @@ public class User
 {
 	private String name;
 	private String email;
-	private int appointmentsID;
+	private int userID;
 	private LocalDate birthday;
+	private int year, month, day;
 	
 	/**
 	 * Default User constructor
 	 */
 	public User()
 	{
-		appointmentsID = 0;
+		userID = 0;
 		name = null;
 		email = null;
 		birthday = LocalDate.of(2000, 01, 01);
@@ -31,8 +32,11 @@ public class User
 		super();
 		this.name = name;
 		this.email = email;
-		this.appointmentsID = id;
+		this.userID = id;
 		this.birthday = LocalDate.of(year, month, day);
+		this.year = year;
+		this.month = month;
+		this.day = day;
 	}
 	
 
@@ -42,7 +46,7 @@ public class User
 	 */
 	public int getId() 
 	{
-		return appointmentsID;
+		return userID;
 	}
 
 	/**
@@ -50,7 +54,7 @@ public class User
 	 * @param id
 	 */
 	public void setID(int id) {
-		appointmentsID = id;
+		userID = id;
 	}
 	
 	public LocalDate getBirthday()
@@ -61,6 +65,21 @@ public class User
 	public void setBirthday(LocalDate bday)
 	{
 		birthday = bday;
+	}
+	
+	public int getYear()
+	{
+		return year;
+	}
+	
+	public int getMonth()
+	{
+		return month;
+	}
+	
+	public int getDay()
+	{
+		return day;
 	}
 
 	/**
@@ -100,7 +119,7 @@ public class User
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + appointmentsID;
+		result = prime * result + userID;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
@@ -119,7 +138,7 @@ public class User
 				return false;
 		} else if (!email.equals(other.email))
 			return false;
-		if (appointmentsID != other.appointmentsID)
+		if (userID != other.userID)
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -131,6 +150,6 @@ public class User
 
 	@Override
 	public String toString() {
-		return "User [appointmentsID=" + appointmentsID + ", Name=" + name + ", Email=" + email + "]";
+		return "User [userID=" + userID + ", Name=" + name + ", Email=" + email + "]";
 	}
 }

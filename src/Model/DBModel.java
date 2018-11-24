@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import Controller.Controller;
+//import Controller.Controller;
 
 public class DBModel 
 {
@@ -55,6 +55,33 @@ public class DBModel
     	try(Connection connection = connectToDB();
     			Statement stmt = connection.createStatement();
     			ResultSet rs = stmt.executeQuery("SELECT * FROM " + mTableName + " WHERE " + mFieldNames[0] + " = " + key))
+    	{
+    		ArrayList<ArrayList<String>> resultsList = new ArrayList<>();
+			while(rs.next())
+			{
+				// Loop through each of the fields
+				// Add each value to the ArrayList
+				ArrayList<String> values = new ArrayList<>(mFieldNames.length);
+				for(String fieldName : mFieldNames)
+				{
+					values.add(rs.getString(fieldName));
+				}
+				// Add values to 2D ArrayList
+				resultsList.add(values);
+			}
+			return resultsList;
+    	}
+    }
+    
+    /**
+     * select * from appointments INNER JOIN userAppointments ON appointments.aID = userAppointments.AID WHERE userAppointments.uID = key
+     */
+    public ArrayList<ArrayList<String>> getAppointments(String key) throws SQLException
+    {
+    	try(Connection connection = connectToDB();
+    			Statement stmt = connection.createStatement();
+    			ResultSet rs = stmt.executeQuery("SELECT * FROM appointments INNER JOIN userAppointments ON appointments.aID = userAppointments.aID "
+    					+ "WHERE userAppointments.userID" + " = " + key))
     	{
     		ArrayList<ArrayList<String>> resultsList = new ArrayList<>();
 			while(rs.next())
@@ -128,6 +155,25 @@ public class DBModel
         mStmt.executeUpdate(updateSQL.toString());
         System.out.println("done");
         return mStmt.getGeneratedKeys().getInt(1);
+    }
+    
+    public void insertAppointment(String[] fields, String[] values, int key) throws SQLException
+    {
+    	if(!(fields == null || values == null || fields.length == 0 || fields.length != values.length))
+    	{
+	        StringBuilder insertSQL = new StringBuilder("INSERT INTO ");
+	        insertSQL.append(mTableName).append("(");
+	        for(int i = 0; i < fields.length; i++)
+	            insertSQL.append(fields[i]).append((i < fields.length - 1) ? "," : ") VALUES(");
+	        for(int i = 0; i < values.length; i++)
+	            insertSQL.append(convertToSQLText(fields[i], values[i])).append((i < values.length - 1) ? "," : ")");
+	
+	        mStmt.executeUpdate(insertSQL.toString());
+	        StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET aID = ").append(key);
+	        updateSQL.append(" WHERE aID is null");//.append(values[0]);
+	        mStmt.executeUpdate(updateSQL.toString());
+	        System.out.println("done");
+    	}
     }
     
     public int createRecord(String[] fields, String[] values) throws SQLException

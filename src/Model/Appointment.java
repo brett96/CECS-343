@@ -34,6 +34,58 @@ public class Appointment
 		return id;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + aID;
+		result = prime * result + endDay;
+		result = prime * result + endMonth;
+		result = prime * result + endTime;
+		result = prime * result + endYear;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + startDay;
+		result = prime * result + startMonth;
+		result = prime * result + startTime;
+		result = prime * result + startYear;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Appointment other = (Appointment) obj;
+		if (aID != other.aID)
+			return false;
+		if (endDay != other.endDay)
+			return false;
+		if (endMonth != other.endMonth)
+			return false;
+		if (endTime != other.endTime)
+			return false;
+		if (endYear != other.endYear)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (startDay != other.startDay)
+			return false;
+		if (startMonth != other.startMonth)
+			return false;
+		if (startTime != other.startTime)
+			return false;
+		if (startYear != other.startYear)
+			return false;
+		return true;
+	}
+
 	public void setID(int id)
 	{
 		this.id = id;
