@@ -194,6 +194,7 @@ public class CalendarProgram{
 	
 	        		controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
 	        		refreshCalendar(currentMonth, currentYear);
+	        		refreshAppointments();
         		}
         		else {
         			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
@@ -201,6 +202,23 @@ public class CalendarProgram{
         	}
         });
         appointmentMenu.add(makeAppointmentButton);
+        
+        JMenu modifyAppointment = new JMenu("Modify Appointment");
+        
+        JMenuItem resetAppointmentNameButton = new JMenuItem(new AbstractAction("Reset Appointment Name") {
+        	public void actionPerformed(ActionEvent e) {
+        		if(controller.getCurrentUser()!= null)
+        		{
+        			String name = JOptionPane.showInputDialog(pnlCalendar, "Enter your new appointment name:", "Name", JOptionPane.QUESTION_MESSAGE);
+        			controller.resetAppointmentName(currentAppID, name);
+        			refreshAppointments();
+        		}
+        		else
+        		{
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
+        	}
+        });
         
         JMenuItem cancelAppointmentButton = new JMenuItem(new AbstractAction("cancel appointment") {
         	public void actionPerformed(ActionEvent e) {
@@ -219,20 +237,88 @@ public class CalendarProgram{
         		}
         	}
         });
-        appointmentMenu.add(cancelAppointmentButton);
         
-        JMenuItem changeAppointmentButton = new JMenuItem(new AbstractAction("change appointment") {
+        
+        JMenuItem changeAppointmentStartDateButton = new JMenuItem(new AbstractAction("Change Appointment Start") {
         	public void actionPerformed(ActionEvent e) {
         		if(controller.getCurrentUser() != null)
         		{
-        			System.out.println("changeAppointmentButton");
+        			if(currentApp != null)
+        			{
+		        		int year = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the new start year of your appointment:", "Start Year", JOptionPane.QUESTION_MESSAGE));
+		        		int month = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the new start month of your appointment:", "Start Month", JOptionPane.QUESTION_MESSAGE));
+		        		int day = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the new start day of your appointment:", "Start Day", JOptionPane.QUESTION_MESSAGE));
+		        		controller.resetAppointmentStartDate(currentAppID, year, month, day);
+		        		refreshAppointments();
+        			}
         		}
         		else {
         			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
         		}
         	}
         });
-        appointmentMenu.add(changeAppointmentButton);
+        
+        JMenuItem changeAppointmentEndDateButton = new JMenuItem(new AbstractAction("Change Appointment End") {
+        	public void actionPerformed(ActionEvent e) {
+        		if(controller.getCurrentUser() != null)
+        		{
+        			if(currentApp != null)
+        			{
+		        		int year = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the new end year of your appointment:", "End Year", JOptionPane.QUESTION_MESSAGE));
+		        		int month = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the new end month of your appointment:", "End Month", JOptionPane.QUESTION_MESSAGE));
+		        		int day = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end start day of your appointment:", "End Day", JOptionPane.QUESTION_MESSAGE));
+		        		controller.resetAppointmentEndDate(currentAppID, year, month, day);
+		        		refreshAppointments();
+        			}
+        		}
+        		else {
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
+        	}
+        });
+        
+        JMenuItem changeAppointmentStartTimeButton = new JMenuItem(new AbstractAction("Change Appointment Start Time") {
+        	public void actionPerformed(ActionEvent e) {
+        		if(controller.getCurrentUser() != null)
+        		{
+        			if(currentApp != null)
+        			{
+		        		int start = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the new start time of your appointment:", "Start Year", JOptionPane.QUESTION_MESSAGE));
+		        		controller.resetAppointmentStartTime(currentAppID, start);
+		        		refreshAppointments();
+        			}
+        		}
+        		else {
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
+        	}
+        });
+        
+        JMenuItem changeAppointmentEndTimeButton = new JMenuItem(new AbstractAction("Change Appointment End Time") {
+        	public void actionPerformed(ActionEvent e) {
+        		if(controller.getCurrentUser() != null)
+        		{
+        			if(currentApp != null)
+        			{
+		        		int end = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the new end time of your appointment:", "Start Year", JOptionPane.QUESTION_MESSAGE));
+		        		controller.resetAppointmentEndTime(currentAppID, end);
+		        		refreshAppointments();
+        			}
+        		}
+        		else {
+        			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
+        		}
+        	}
+        });
+        
+        modifyAppointment.add(resetAppointmentNameButton);
+        modifyAppointment.add(cancelAppointmentButton);
+        modifyAppointment.add(changeAppointmentStartDateButton);
+        modifyAppointment.add(changeAppointmentEndDateButton);
+        modifyAppointment.add(changeAppointmentStartTimeButton);
+        modifyAppointment.add(changeAppointmentEndTimeButton);
+        appointmentMenu.add(modifyAppointment);
+        
         
         JMenuItem exportSchedule = new JMenuItem(new AbstractAction("Export Schedule") {
         	public void actionPerformed(ActionEvent e) {

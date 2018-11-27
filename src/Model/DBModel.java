@@ -281,7 +281,7 @@ public class DBModel
     
     public void changeAppointmentEndTime(int id, int start) throws SQLException
     {
-    	StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET startTime = ").append(start);
+    	StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET endTime = ").append(start);
     	updateSQL.append(" WHERE aID = ").append(id);
     	mStmt.executeUpdate(updateSQL.toString());
     }
