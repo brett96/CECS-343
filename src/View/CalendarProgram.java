@@ -22,6 +22,7 @@ public class CalendarProgram{
     static JButton btnPrev, btnNext;
     static JTable tblCalendar;
     static JComboBox cmbYear;
+    static JComboBox appList;
     static JFrame frmMain;
     static Container pane;
     static DefaultTableModel mtblCalendar; //Table model
@@ -31,6 +32,9 @@ public class CalendarProgram{
     static boolean boolDayView, boolWeekView, boolMonthView;
     static boolean appointmentToday;
     static Appointment userAppointment;
+    
+    static Appointment currentApp;
+    static int currentAppID;
     
     public static void main (String args[]){
     	boolMonthView = true;
@@ -44,10 +48,15 @@ public class CalendarProgram{
         
         //Prepare frame
         frmMain = new JFrame ("Calendar"); //Create frame
-        frmMain.setSize(330, 375);
+        frmMain.setSize(350, 395);
         pane = frmMain.getContentPane(); //Get content pane
         pane.setLayout(null); //Apply null layout
         frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Close when X is clicked
+        
+        appList = new JComboBox();
+        appList.addActionListener(new appSelect_Action());
+        appList.setBounds(100, 05, 150, 20);
+        appList.setVisible(false);
         
         JMenuBar menubar = new JMenuBar();
         
@@ -83,6 +92,7 @@ public class CalendarProgram{
         		password = JOptionPane.showInputDialog(pnlCalendar, "Enter your password:", "Login", JOptionPane.QUESTION_MESSAGE);
         		try {
 					System.out.println(controller.signInUser(email, password));
+					refreshAppointments();
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -196,7 +206,13 @@ public class CalendarProgram{
         	public void actionPerformed(ActionEvent e) {
         		if(controller.getCurrentUser() != null)
         		{
-        			System.out.println("changeAppointmentButton");
+        			if(currentApp != null)
+        			{
+        				controller.deleteAppointment(currentAppID);
+        				controller.getAllAppointments().remove(currentApp);
+        				refreshAppointments();
+        			}
+        			
         		}
         		else {
         			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");
@@ -313,6 +329,7 @@ public class CalendarProgram{
         lblMonth = new JLabel ("January");
         lblYear = new JLabel ("Change year:");
         cmbYear = new JComboBox();
+        
         btnPrev = new JButton ("<");
         btnNext = new JButton (">");
         mtblCalendar = new DefaultTableModel(){public boolean isCellEditable(int rowIndex, int mColIndex){return false;}};
@@ -328,6 +345,7 @@ public class CalendarProgram{
         btnPrev.addActionListener(new btnPrev_Action());
         btnNext.addActionListener(new btnNext_Action());
         cmbYear.addActionListener(new cmbYear_Action());
+        
         //calendarViewBar.addActionListener(new weekView_Action);
         
         //Add controls to pane
@@ -338,12 +356,14 @@ public class CalendarProgram{
         pnlCalendar.add(btnPrev);
         pnlCalendar.add(btnNext);
         pnlCalendar.add(stblCalendar);
+        pnlCalendar.add(appList);
         
         //Set bounds
         pnlCalendar.setBounds(0, 0, 320, 335);
         lblMonth.setBounds(160-lblMonth.getPreferredSize().width/2, 25, 100, 25);
         lblYear.setBounds(10, 305, 150, 20);
         cmbYear.setBounds(225, 305, 90, 20);
+        
         btnPrev.setBounds(10, 25, 50, 25);
         btnNext.setBounds(260, 25, 50, 25);
         stblCalendar.setBounds(10, 50, 300, 250);
@@ -420,6 +440,18 @@ public class CalendarProgram{
         
         //Refresh calendar
         refreshCalendar (realMonth, realYear); //Refresh calendar
+    }
+    
+    public static void refreshAppointments()
+    {
+    	appList.removeAllItems();
+    	if(controller.getCurrentUser() != null)
+		{
+			ObservableList<Appointment> appointments = controller.getAppointmentsForCurrentUser();
+			for(Appointment a : appointments)
+				appList.addItem(a);
+			appList.setVisible(true);
+		}
     }
     
     public static void refreshCalendar(int month, int year){
@@ -689,6 +721,17 @@ public class CalendarProgram{
                 refreshCalendar(currentMonth, currentYear);
             }
         }
+    }
+    
+    static class appSelect_Action implements ActionListener
+    {
+    	public void actionPerformed (ActionEvent e)
+    	{
+    		if(appList.getSelectedItem() != null){
+    			currentApp = (Appointment) appList.getSelectedItem();
+    			currentAppID = currentApp.getAID();
+    		}
+    	}
     }
     
 }

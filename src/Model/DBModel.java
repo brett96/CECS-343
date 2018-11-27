@@ -320,6 +320,14 @@ public class DBModel
         mStmt.executeUpdate(deleteRecord);
     }
     
+    public void deleteAppointment(String key) throws SQLException
+    {
+    	String delete = "DELETE FROM appointments WHERE aID = " + key;
+    	mStmt.executeUpdate(delete);
+    	delete = "DELETE FROM userAppointments WHERE aID = " + key;
+    	mStmt.executeUpdate(delete);
+    }
+    
     private String convertToSQLText(String field, String value) {
         for (int i = 0; i < mFieldNames.length; i++) {
             if (field.equalsIgnoreCase(mFieldNames[i])) {

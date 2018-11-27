@@ -652,6 +652,20 @@ public final class Controller
     	}
     }
     
+    public String deleteAppointment(int id)
+    {
+    	try
+    	{
+    		controller.getAppointmentsDB().deleteAppointment(Integer.toString(id));
+    		return "SUCCESS";
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    		return "ERROR";
+    	}
+    }
+    
 //    public boolean verifyOwner(String email, LocalDate birthday)
 //    {
 //    	if(currentUser != null)
