@@ -192,9 +192,13 @@ public class CalendarProgram{
 	        		int startTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start time of your appointment in millitary time(Eg. 7:30 AM = 0730):", "End Year", JOptionPane.QUESTION_MESSAGE));
 	        		int endTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end time of your appointment in millitary time(Eg. 9:30 PM = 2130):", "End Year", JOptionPane.QUESTION_MESSAGE));
 	
-	        		controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
+	        		String status = controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
+	        		if(status.equals("Time Conflict"))
+	        			JOptionPane.showMessageDialog(pnlCalendar, "There Is A Time Conflict");
+	        		
 	        		refreshCalendar(currentMonth, currentYear);
 	        		refreshAppointments();
+	        		
         		}
         		else {
         			JOptionPane.showMessageDialog(pnlCalendar, "You Must Be Signed In To Do This");

@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -379,6 +379,60 @@ public final class Controller
 	    		// Add appointment to db, get aID
 	    		int aID = controller.getAppointmentsDB().insertAppointment(Arrays.copyOfRange(APPOINTMENTS_FIELD_NAMES, 0, APPOINTMENTS_FIELD_NAMES.length - 1), values);
 	    		// Add appointment to allAppointmentsList
+	    		LocalDate newAppSDate = LocalDate.of(startYear, startMonth, startDay);
+	    		LocalDate newAppEDate = LocalDate.of(endYear, endMonth, endDay);
+	    		String start = String.format("%04d", startTime);
+
+	    		int startHour = Integer.valueOf(start.substring(0, 2));
+	    		int startMin = Integer.valueOf(start.substring(2, start.length()));
+	    		
+	    		String end = String.format("%04d", endTime);
+	    		System.out.println(end);
+	    		int endHour = Integer.valueOf(end.substring(0, 2));
+	    		int endMin = Integer.valueOf(end.substring(2, end.length()));
+	    		System.out.println(endHour);
+	    		System.out.println(endMin);
+	    		
+	    		
+	    		LocalTime newAppStart = LocalTime.of(startHour, startMin);
+	    		LocalTime newAppEnd = LocalTime.of(endHour, endMin);
+	    		LocalDateTime newAppSDateTime = LocalDateTime.of(newAppSDate, newAppStart);
+	    		LocalDateTime newAppEDateTime = LocalDateTime.of(newAppEDate, newAppEnd);
+	    		
+	    		ObservableList<Appointment> currentApps = controller.getAppointmentsForCurrentUser();
+	    		for(Appointment a : currentApps)
+	    		{
+	    			int sYear = a.getStartYear();
+	    			int sMonth = a.getStartMonth();
+	    			int sDay = a.getStartDay();
+	    			int eYear = a.getEndYear();
+	    			int eMonth = a.getEndMonth();
+	    			int eDay = a.getEndDay();
+	    			
+	    			LocalDate aStartDate = LocalDate.of(sYear, sMonth, sDay);
+	    			LocalDate aEndDate = LocalDate.of(eYear, eMonth, eDay);	  
+	    			
+	    			start = String.format("%04d", a.getStartTime());
+
+	    			startHour = Integer.valueOf(start.substring(0, 2));
+		    		startMin = Integer.valueOf(start.substring(2, start.length()));
+		    		
+		    		end = String.format("%04d", a.getEndTime());
+		    		endHour = Integer.valueOf(end.substring(0, 2));
+		    		endMin = Integer.valueOf(end.substring(2, end.length()));
+		    		
+		    		LocalTime aStart = LocalTime.of(startHour, startMin);
+		    		LocalTime aEnd = LocalTime.of(endHour, endMin);
+		    		
+		    		LocalDateTime aSDateTime = LocalDateTime.of(aStartDate, aStart);
+		    		LocalDateTime aEDateTime = LocalDateTime.of(aEndDate, aEnd);
+		    		
+		    		if((newAppSDateTime.isAfter(aSDateTime) && newAppSDateTime.isBefore(aEDateTime))
+		    				|| (newAppEDateTime.isAfter(aSDateTime)))
+		    			return "Time Conflict";
+		    		
+	    		}
+	    		
 	    		String[] uaValues = {Integer.toString(id), Integer.toString(aID)};
 	    		controller.getUserAppointmentsDB().createRecord(USER_APPOINTMENTS_FIELD_NAMES, uaValues);
 	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID);
