@@ -31,7 +31,8 @@ public final class Controller
     private static final String[] USER_APPOINTMENTS_FIELD_NAMES = {"userID", "aID"};
     private static final String[] USER_APPOINTMENTS_FIELD_TYPES = {"INTEGER", "INTEGER"};
     
-    private static final String DATA_FILE = "schedule.csv";
+    private static final String EXPORT_FILE = "schedule.csv";
+    private static final String IMPORT_FILE = "import.csv";
     
     private ObservableList<User> allUsersList;
     private ObservableList<Appointment> allAppointmentsList;
@@ -152,7 +153,7 @@ public final class Controller
     {
     	if(currentUser != null)
     	{
-    		FileWriter schedule = new FileWriter(DATA_FILE);
+    		FileWriter schedule = new FileWriter(EXPORT_FILE);
     		ObservableList<Appointment> userAppointments = controller.getAppointmentsForCurrentUser();
     		
     		// First line = User Info
@@ -181,9 +182,9 @@ public final class Controller
     	return "FAILED";
     }
     
-    public String importSchedule(String infile) throws IOException, SQLException
+    public String importSchedule() throws IOException, SQLException
     {
-    	BufferedReader schedule = new BufferedReader(new FileReader(infile));
+    	BufferedReader schedule = new BufferedReader(new FileReader(IMPORT_FILE));
     	String line = "", name = "";
     	int userID, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID;
 

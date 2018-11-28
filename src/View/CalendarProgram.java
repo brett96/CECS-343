@@ -348,7 +348,7 @@ public class CalendarProgram{
         		if(controller.getCurrentUser() != null)
         		{
         			try {
-        				System.out.println(controller.importSchedule("schedule.csv"));
+        				System.out.println(controller.importSchedule());
         				System.out.println("Schedule Imported");	
         			}
         			catch (IOException e1) {
