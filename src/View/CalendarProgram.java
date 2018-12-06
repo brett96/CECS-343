@@ -38,7 +38,6 @@ public class CalendarProgram{
     
     public static void main (String args[]){
     	boolMonthView = true;
-    	
         //Look and feel
         try {UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());}
         catch (ClassNotFoundException e) {}

@@ -8,6 +8,11 @@ import java.sql.SQLException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Properties;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import Model.Appointment;
 import Model.DBModel;
@@ -824,6 +829,52 @@ public final class Controller
 	public void setUserAppointmentsDB(DBModel userAppointmentsDB)
 	{
 		this.userAppointmentsDB = userAppointmentsDB;
+	}
+	
+	public void sendEmail(String email, String text)
+	{
+		String host = "smtp.gmail.com";
+		String to = email;
+		String from = "cecs343project@gmail.com";
+		String password = "343projectpassword";
+		String port = "465";
+		Properties properties = System.getProperties();
+		properties.put("mail.smtp.host", host);
+		properties.put("mail.smtp.auth", "true");  
+		properties.put("mail.smtp.port", port);  
+		properties.put("mail.debug", "true");  
+		properties.put("mail.smtp.socketFactory.port", "465");  
+		properties.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");  
+		properties.put("mail.smtp.socketFactory.fallback", "false");  
+		Session session = Session.getDefaultInstance(properties,  
+			    new javax.mail.Authenticator() {
+			       protected PasswordAuthentication getPasswordAuthentication() {  
+			       return new PasswordAuthentication(from,password);  
+			   }  
+			   });  
+		
+		try {
+	         // Create a default MimeMessage object.
+	         MimeMessage message = new MimeMessage(session);
+
+	         // Set From: header field of the header.
+	         message.setFrom(new InternetAddress(from));
+
+	         // Set To: header field of the header.
+	         message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+
+	         // Set Subject: header field
+	         message.setSubject("Test Email");
+
+	         // Now set the actual message
+	         message.setText(text);
+
+	         // Send message
+	         Transport.send(message);
+	         System.out.println("Sent message successfully....");
+	      } catch (MessagingException mex) {
+	         mex.printStackTrace();
+	      }
 	}
 }
     
