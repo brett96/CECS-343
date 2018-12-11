@@ -187,16 +187,17 @@ public class CalendarProgram{
         JMenu appointmentMenu = new JMenu("appointment");
         
         JMenuItem makeAppointmentButton = new JMenuItem(new AbstractAction("make appointment") {
+        	int startTime, startDay;
         	public void actionPerformed(ActionEvent e) {
         		if(controller.getCurrentUser() != null){
 	        		String name = JOptionPane.showInputDialog(pnlCalendar, "Enter your appointment name:", "Name", JOptionPane.QUESTION_MESSAGE);
 	        		int startYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start year of your appointment:", "Start Year", JOptionPane.QUESTION_MESSAGE));
 	        		int startMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start month of your appointment:", "Start Month", JOptionPane.QUESTION_MESSAGE));
-	        		int startDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start day of your appointment:", "Start Day", JOptionPane.QUESTION_MESSAGE));
+	        		startDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start day of your appointment:", "Start Day", JOptionPane.QUESTION_MESSAGE));
 	        		int endYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end year of your appointment:", "End Year", JOptionPane.QUESTION_MESSAGE));
 	        		int endMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end month of your appointment:", "End Month", JOptionPane.QUESTION_MESSAGE));
 	        		int endDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end day of your appointment:", "End Day", JOptionPane.QUESTION_MESSAGE));
-	        		int startTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start time of your appointment in millitary time(Eg. 7:30 AM = 0730):", "End Year", JOptionPane.QUESTION_MESSAGE));
+	        		startTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start time of your appointment in millitary time(Eg. 7:30 AM = 0730):", "End Year", JOptionPane.QUESTION_MESSAGE));
 	        		int endTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end time of your appointment in millitary time(Eg. 9:30 PM = 2130):", "End Year", JOptionPane.QUESTION_MESSAGE));
 	        		int reminder = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "When would you like to be reminded of this appointment?\n"
 	        				+ "	1 = 1 day before\n" + 
@@ -246,7 +247,17 @@ public class CalendarProgram{
 	        			  @Override
 	        			  public void run() 
 	        			  {
-	        			    System.out.println("timer went off");
+	        				  try
+	        				  {
+	        					  String email = controller.getCurrentUser().getEmail();
+	        					  email = email.replace("'", "");
+		        				  controller.sendEmail(email, "This is a reminder that your appointment "
+		        						  + name + " is at " + startTime + " on " + startMonth + "/" + startDay + "/" + startYear);
+	        				  }
+	        				  catch(Exception e)
+	        				  {
+	        					  e.printStackTrace();
+	        				  }
 	        			  }
 	        			}, d);
 	        		
