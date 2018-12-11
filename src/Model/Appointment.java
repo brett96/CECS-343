@@ -12,9 +12,10 @@ public class Appointment
 	private int endDay;
 	private int startTime;
 	private int endTime;
+	private int reminder;
 	private int aID;
 	
-	public Appointment(int id, String name, int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int startTime, int endTime, int aID)
+	public Appointment(int id, String name, int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int startTime, int endTime, int reminder, int aID)
 	{
 		this.id = id;
 		this.name = name;
@@ -26,12 +27,18 @@ public class Appointment
 		this.endDay = endDay;
 		this.startTime = startTime;
 		this.endTime = endTime;
+		this.reminder = reminder;
 		this.aID = aID;
 	}
 	
 	public int getID()
 	{
 		return id;
+	}
+	
+	public int getReminder()
+	{
+		return reminder;
 	}
 
 	@Override

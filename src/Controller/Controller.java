@@ -25,12 +25,12 @@ public final class Controller
 	private static Controller controller;
 	private static final String DB_NAME = "cecs343.db";
 	private static final String USER_TABLE_NAME = "users";
-    private static final String[] USER_FIELD_NAMES = {"userID", "name", "email", "password", "birthYear", "birthMonth", "birthDay"};
-    private static final String[] USER_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT PRIMARY KEY", "TEXT", "INTEGER", "INTEGER", "INTEGER"};	// Primary key is actually appointmentsID, NOT email.  Change is in effect but can't be changed here for some reason
+    private static final String[] USER_FIELD_NAMES = {"userID", "name", "email", "password", "birthYear", "birthMonth", "birthDay", "reminderPreference"};
+    private static final String[] USER_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT PRIMARY KEY", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};	// Primary key is actually appointmentsID, NOT email.  Change is in effect but can't be changed here for some reason
     
     private static final String APPOINTMENTS_TABLE_NAME = "appointments";
-    private static final String[] APPOINTMENTS_FIELD_NAMES = {"userID", "appointmentName", "startYear", "startMonth", "startDay", "endYear", "endMonth", "endDay", "startTime", "endTime", "aID"};
-    private static final String[] APPOINTMENTS_FIELD_TYPES = {"INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
+    private static final String[] APPOINTMENTS_FIELD_NAMES = {"userID", "appointmentName", "startYear", "startMonth", "startDay", "endYear", "endMonth", "endDay", "startTime", "endTime", "reminder", "aID"};
+    private static final String[] APPOINTMENTS_FIELD_TYPES = {"INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
     
     private static final String USER_APPOINTMENTS_TABLE_NAME = "userAppointments";
     private static final String[] USER_APPOINTMENTS_FIELD_NAMES = {"userID", "aID"};
@@ -80,8 +80,9 @@ public final class Controller
             		int year = Integer.parseInt(values.get(4));
             		int month = Integer.parseInt(values.get(5));
             		int day = Integer.parseInt(values.get(6));
+            		int preference = Integer.parseInt(values.get(7));
             		// Add each user in db to allUsersList
-            		controller.allUsersList.add(new User(name, email, userID , year, month, day));	
+            		controller.allUsersList.add(new User(name, email, userID , year, month, day, preference));	
             	}
             	
             	// Initialize appointments
@@ -100,9 +101,10 @@ public final class Controller
             		int endDay = Integer.parseInt(values.get(7));
             		int startTime = Integer.parseInt(values.get(8));
             		int endTime = Integer.parseInt(values.get(9));
-            		int aID = Integer.parseInt(values.get(10));
+            		int reminder = Integer.parseInt(values.get(10));
+            		int aID = Integer.parseInt(values.get(11));
             		// Add each appointment to list
-            		controller.allAppointmentsList.add(new Appointment(userID, name, startYear, startMonth , startDay,  endYear, endMonth, endDay, startTime, endTime, aID));
+            		controller.allAppointmentsList.add(new Appointment(userID, name, startYear, startMonth , startDay,  endYear, endMonth, endDay, startTime, endTime, reminder, aID));
             	}
             	
             	//controller.setUserAppointmentsDB(new DBModel(DB_NAME, USER_APPOINTMENTS_TABLE_NAME, USER_APPOINTMENTS_FIELD_NAMES, USER_APPOINTMENTS_FIELD_TYPES));
@@ -150,6 +152,26 @@ public final class Controller
     }
     
     /**
+     * Returns the current user reminder's preference in integer form
+     * Example of what integer representation could be:
+     * 	1 = 1 day before
+     * 	2 = 1 hour before
+     * 	3 = 30 mins before
+     * 	4 = on time
+     * @param currentUser
+     * @return
+     */
+    public int getReminderPreference(User currentUser)
+    {
+    	return this.currentUser.getPreference();
+    }
+    
+    public int getApptReminder(Appointment a)
+    {
+    	return a.getReminder();
+    }
+    
+    /**
      * Exports signed in user's schedule to a csv file
      * @return
      * @throws IOException
@@ -164,7 +186,7 @@ public final class Controller
     		// First line = User Info
 			schedule.append(currentUser.getName() + ", " + currentUser.getEmail() + ", " + Integer.toString(currentUser.getId()) + ", " 
 					+ Integer.toString(currentUser.getYear()) + ", " + Integer.toString(currentUser.getMonth()) + ", " 
-					+ Integer.toString(currentUser.getDay()) + "\n");
+					+ Integer.toString(currentUser.getDay()) + ", " + Integer.toString(currentUser.getPreference()) + "\n");
     	
 			// Remaining lines are appointments
 			for(Appointment a : userAppointments)
@@ -191,7 +213,7 @@ public final class Controller
     {
     	BufferedReader schedule = new BufferedReader(new FileReader(IMPORT_FILE));
     	String line = "", name = "";
-    	int userID, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID;
+    	int userID, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, reminder, aID;
 
     	line = schedule.readLine();				// Get user info from 1st line
     	String[] userVals = line.split(", ");	// Split up data
@@ -201,7 +223,8 @@ public final class Controller
     	int year = Integer.valueOf(userVals[3]);
     	int month = Integer.valueOf(userVals[4]);
     	int day = Integer.valueOf(userVals[5]);
-    	User newUser = new User(name, email, id, year, month, day);
+    	int preference = Integer.valueOf(userVals[6]);
+    	User newUser = new User(name, email, id, year, month, day, preference);
     	boolean merge = false;
     	for(User u : allUsersList)
     	{
@@ -228,10 +251,11 @@ public final class Controller
     		endDay = Integer.valueOf(values[7]);
     		startTime = Integer.valueOf(values[8]);
     		endTime = Integer.valueOf(values[9]);
-    		aID = Integer.valueOf(values[10]);
+    		reminder = Integer.valueOf(values[10]);
+    		aID = Integer.valueOf(values[11]);
     		
     		boolean exists = false;	// Check if appointment is already in db
-    		Appointment newAppt = new Appointment(userID, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID);
+    		Appointment newAppt = new Appointment(userID, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, reminder, aID);
   
     		
     		for(Appointment a : allAppointmentsList)
@@ -263,7 +287,7 @@ public final class Controller
 				controller.getUserAppointmentsDB().insertAppointment(USER_APPOINTMENTS_FIELD_NAMES, cuaVals);
 				if(merge)	// If user is in db:
 					controller.getUserAppointmentsDB().insertAppointment(USER_APPOINTMENTS_FIELD_NAMES, uaVals);	// Add imported userID & aID to userAppointments
-    			allAppointmentsList.add(new Appointment(currentUser.getDay(), name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, addAppt));
+    			allAppointmentsList.add(new Appointment(currentUser.getDay(), name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, reminder, addAppt));
     		}	
     	}
     	schedule.close();
@@ -278,7 +302,7 @@ public final class Controller
      * @param password
      * @return
      */
-    public String signUpUser(String name, String email, String password, int year, int month, int day)
+    public String signUpUser(String name, String email, String password, int year, int month, int day, int preference)
     {
     	for(User user : controller.allUsersList)	// Check for email already in use
     	{
@@ -289,13 +313,13 @@ public final class Controller
     	}
     	
     	// Array of values to be inserted into db
-    	String[] values = {name, email, password, Integer.toString(year), Integer.toString(month), Integer.toString(day)};
+    	String[] values = {name, email, password, Integer.toString(year), Integer.toString(month), Integer.toString(day), Integer.toString(preference)};
     	//System.out.println(email);
     	try
     	{
     		int id = controller.getUsersDB().createRecord(Arrays.copyOfRange	//  Try inserting user into db & get userID
     				(USER_FIELD_NAMES, 1, USER_FIELD_NAMES.length), values);
-    		User newUser = new User(name, email, id, year, month, day);		//  Add new user to allUsersList
+    		User newUser = new User(name, email, id, year, month, day, preference);		//  Add new user to allUsersList
     		controller.allUsersList.add(newUser);
     		controller.currentUser = newUser;		// Set current user to new user
     		
@@ -303,7 +327,6 @@ public final class Controller
 //    		try {
 //				System.out.println(controller.importSchedule(DATA_FILE));
 //			} catch (IOException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
     		
@@ -373,13 +396,13 @@ public final class Controller
      * @param endTime
      * @return
      */
-    public String addAppointment(String name, int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int startTime, int endTime)
+    public String addAppointment(String name, int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int startTime, int endTime, int reminder)
     {
     	if (currentUser != null) 
     	{
     		int id = currentUser.getId();
     		// Array of passed appointment parameters to be inserted to db
-	    	String[] values = {Integer.toString(id), name, Integer.toString(startYear), Integer.toString(startMonth), Integer.toString(startDay), Integer.toString(endYear), Integer.toString(endMonth), Integer.toString(endDay), Integer.toString(startTime), Integer.toString(endTime)};
+	    	String[] values = {Integer.toString(id), name, Integer.toString(startYear), Integer.toString(startMonth), Integer.toString(startDay), Integer.toString(endYear), Integer.toString(endMonth), Integer.toString(endDay), Integer.toString(startTime), Integer.toString(endTime), Integer.toString(reminder)};
 	    	try
 	    	{
 	    		// Add appointment to db, get aID
@@ -441,7 +464,7 @@ public final class Controller
 	    		
 	    		String[] uaValues = {Integer.toString(id), Integer.toString(aID)};
 	    		controller.getUserAppointmentsDB().createRecord(USER_APPOINTMENTS_FIELD_NAMES, uaValues);
-	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, aID);
+	    		Appointment newAppointment = new Appointment(id, name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, reminder, aID);
 	    		controller.allAppointmentsList.add(newAppointment); 
 	    	}
 	    	catch(SQLException e)

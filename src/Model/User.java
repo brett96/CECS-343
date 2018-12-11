@@ -8,7 +8,7 @@ public class User
 	private String email;
 	private int userID;
 	private LocalDate birthday;
-	private int year, month, day;
+	private int year, month, day, preference;
 	
 	/**
 	 * Default User constructor
@@ -27,7 +27,7 @@ public class User
 	 * @param name
 	 * @param email
 	 */
-	public User(String name, String email, int id, int year, int month, int day)
+	public User(String name, String email, int id, int year, int month, int day, int preference)
 	{
 		super();
 		this.name = name;
@@ -37,6 +37,7 @@ public class User
 		this.year = year;
 		this.month = month;
 		this.day = day;
+		this.preference = preference;
 	}
 	
 
@@ -112,6 +113,11 @@ public class User
 	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public int getPreference()
+	{
+		return preference;
 	}
 
 	@Override

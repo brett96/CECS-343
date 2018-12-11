@@ -65,7 +65,7 @@ public class CalendarProgram{
         JMenuItem createAccountButton = new JMenuItem(new AbstractAction("Create Account") {
         	public void actionPerformed(ActionEvent e) {
         		String username, password, email, age;
-        		int bDay, bMonth, bYear;
+        		int bDay, bMonth, bYear, preference;
         		username = JOptionPane.showInputDialog(pnlCalendar, "Enter a username:", "Create Account", JOptionPane.QUESTION_MESSAGE);
         		password = JOptionPane.showInputDialog(pnlCalendar, "Enter a password:", "Create Account", JOptionPane.QUESTION_MESSAGE);
         		email = JOptionPane.showInputDialog(pnlCalendar, "Enter an email:", "Create Account", JOptionPane.QUESTION_MESSAGE);
@@ -74,7 +74,12 @@ public class CalendarProgram{
         		bYear = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth year:", "Create Account", JOptionPane.QUESTION_MESSAGE));
         		bMonth = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth month:", "Create Account", JOptionPane.QUESTION_MESSAGE));
         		bDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter your birth day:", "Create Account", JOptionPane.QUESTION_MESSAGE));
-        		System.out.println(controller.signUpUser(username, email, password, bYear, bMonth, bDay));
+        		preference = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "What would you like your default reminder preference to be?\n"
+        				+ "	1 = 1 day before\n" + 
+        				" 2 = 1 hour before\n" + 
+        				" 3 = 30 mins before\n" + 
+        				" 4 = on time:", "Default Preference", JOptionPane.QUESTION_MESSAGE));
+        		System.out.println(controller.signUpUser(username, email, password, bYear, bMonth, bDay, preference));
         		//System.out.println(controller.signInUser(email, password));
         		
         		
@@ -190,8 +195,13 @@ public class CalendarProgram{
 	        		int endDay = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end day of your appointment:", "End Day", JOptionPane.QUESTION_MESSAGE));
 	        		int startTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the start time of your appointment in millitary time(Eg. 7:30 AM = 0730):", "End Year", JOptionPane.QUESTION_MESSAGE));
 	        		int endTime = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "Enter the end time of your appointment in millitary time(Eg. 9:30 PM = 2130):", "End Year", JOptionPane.QUESTION_MESSAGE));
-	
-	        		String status = controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime);
+	        		int reminder = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "When would you like to be reminded of this appointment?\n"
+	        				+ "	1 = 1 day before\n" + 
+	        				" 2 = 1 hour before\n" + 
+	        				" 3 = 30 mins before\n" + 
+	        				" 4 = on time:", "Default Preference", JOptionPane.QUESTION_MESSAGE));
+	        		
+	        		String status = controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, reminder);
 	        		if(status.equals("Time Conflict"))
 	        			JOptionPane.showMessageDialog(pnlCalendar, "There Is A Time Conflict");
 	        		
