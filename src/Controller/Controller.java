@@ -202,6 +202,7 @@ public final class Controller
     			schedule.append(Integer.toString(a.getEndDay()) + ", ");		// End day 	
     			schedule.append(Integer.toString(a.getStartTime()) + ", ");		// Start Time
     			schedule.append(Integer.toString(a.getEndTime()) + ", ");		// End Time
+    			schedule.append(Integer.toString(a.getReminder()) + ", ");
     			schedule.append(Integer.toString(a.getAID()) + "\n");
     		}
     		schedule.close();

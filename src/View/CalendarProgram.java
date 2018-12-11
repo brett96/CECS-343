@@ -414,6 +414,8 @@ public class CalendarProgram{
         		{
         			try {
         				System.out.println(controller.importSchedule());
+        				refreshCalendar(currentMonth, currentYear);
+        				refreshAppointments();
         				System.out.println("Schedule Imported");	
         			}
         			catch (IOException e1) {
