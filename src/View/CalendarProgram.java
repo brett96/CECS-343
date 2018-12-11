@@ -710,6 +710,7 @@ public class CalendarProgram{
         	boolean firstRunThree = true;
         	boolean firstRunFour = true;
         	boolean firstRunFive = true;
+        	boolean firstRunSix = true;
         	
         	int rowCount = 0;
         	mtblCalendar.setRowCount(100);
@@ -754,6 +755,12 @@ public class CalendarProgram{
                 	rowCount++;
                 	firstRunFive = false;
                 }
+                if(row  == 5 && firstRunSix == true && appointmentToday == true)
+                {
+                	mtblCalendar.setValueAt("Appointments for week " + (6), rowCount, column);
+                	rowCount++;
+                	firstRunSix = false;
+                }
                 
                 if(appointmentToday == true && controller.getCurrentUser() != null)
                 {
@@ -770,6 +777,7 @@ public class CalendarProgram{
         	boolean firstRunThree = true;
         	boolean firstRunFour = true;
         	boolean firstRunFive = true;
+        	boolean firstRunSix = true;
         	
         	int rowCount = 0;
         	mtblCalendar.setRowCount(100);
@@ -785,7 +793,8 @@ public class CalendarProgram{
                 appointmentToday = compareDayToAppointmentList(year, month, i);             
                 if(appointmentToday == true && controller.getCurrentUser() != null)
                 {
-                    mtblCalendar.setValueAt(userAppointment, rowCount, column);
+                	
+                    mtblCalendar.setValueAt((userAppointment + " Starting at: " + Integer.toString(userAppointment.getStartTime())), rowCount, column);
                     rowCount++;
                 }
             }
