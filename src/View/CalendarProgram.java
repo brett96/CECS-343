@@ -12,8 +12,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.Timer;
+
 import javax.swing.JOptionPane;
 
 public class CalendarProgram{
@@ -77,8 +80,8 @@ public class CalendarProgram{
         		preference = Integer.parseInt(JOptionPane.showInputDialog(pnlCalendar, "What would you like your default reminder preference to be?\n"
         				+ "	1 = 1 day before\n" + 
         				" 2 = 1 hour before\n" + 
-        				" 3 = 30 mins before\n" + 
-        				" 4 = on time:", "Default Preference", JOptionPane.QUESTION_MESSAGE));
+        				" 3 = 30 mins before\n", JOptionPane.QUESTION_MESSAGE));
+        		
         		System.out.println(controller.signUpUser(username, email, password, bYear, bMonth, bDay, preference));
         		//System.out.println(controller.signInUser(email, password));
         		
@@ -199,11 +202,53 @@ public class CalendarProgram{
 	        				+ "	1 = 1 day before\n" + 
 	        				" 2 = 1 hour before\n" + 
 	        				" 3 = 30 mins before\n" + 
-	        				" 4 = on time:", "Default Preference", JOptionPane.QUESTION_MESSAGE));
+	        				" or enter the time of day on the day of the appointment to remind you eg. 1430 for a 1500 appointment", "Preference", JOptionPane.QUESTION_MESSAGE));
 	        		
 	        		String status = controller.addAppointment(name, startYear, startMonth, startDay, endYear, endMonth, endDay, startTime, endTime, reminder);
 	        		if(status.equals("Time Conflict"))
 	        			JOptionPane.showMessageDialog(pnlCalendar, "There Is A Time Conflict");
+	        		
+	        		if (reminder == 1)
+	        		{
+	        			startDay--;
+	        		}
+	        		else if (reminder == 2)
+	        		{
+	        			startTime = startTime - 100;
+	        		}
+	        		else if (reminder == 3)
+	        		{
+	        			int minutes = (startTime%100) - 30;
+	        			if(minutes < 0)
+	        			{
+	        				startTime = startTime - 100;
+	        				startTime = startTime + (minutes*-1);
+	        			}
+	        			else
+	        			{
+	        				startTime = startTime - 30;
+	        			}		
+	        		}
+	        		else
+	        		{
+	        			startTime = reminder;
+	        		}
+	        			
+	        		Calendar cal = Calendar.getInstance();
+	        		cal.set(startYear, startMonth-1, startDay, (startTime/100), (startTime%100));
+	        		Date d = cal.getTime();
+	        		
+	        		
+	        		//add reminder logic here
+	        		Timer t = new Timer();
+	        		t.schedule(new TimerTask() 
+	        		{
+	        			  @Override
+	        			  public void run() 
+	        			  {
+	        			    System.out.println("timer went off");
+	        			  }
+	        			}, d);
 	        		
 	        		refreshCalendar(currentMonth, currentYear);
 	        		refreshAppointments();
@@ -660,7 +705,6 @@ public class CalendarProgram{
             //Draw calendar week view
             for (int i=1; i<=nod; i++)
             {
-            	System.out.println("Row count: " + rowCount + " on iteration: " + i);
             	//mtblCalendar.setRowCount(rowCount);
             	int row = new Integer((i+som-2)/7);
                 int column  = 0;
@@ -721,7 +765,6 @@ public class CalendarProgram{
             //Draw calendar week view
             for (int i=1; i<=nod; i++)
             {
-            	System.out.println("Row count: " + rowCount + " on iteration: " + i);
             	//mtblCalendar.setRowCount(rowCount);
             	int row = new Integer((i+som-2)/7);
                 int column  = 0;
