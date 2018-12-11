@@ -401,6 +401,7 @@ public final class Controller
     	if (currentUser != null) 
     	{
     		int id = currentUser.getId();
+    		boolean timeConflict = false;
     		// Array of passed appointment parameters to be inserted to db
 	    	String[] values = {Integer.toString(id), name, Integer.toString(startYear), Integer.toString(startMonth), Integer.toString(startDay), Integer.toString(endYear), Integer.toString(endMonth), Integer.toString(endDay), Integer.toString(startTime), Integer.toString(endTime), Integer.toString(reminder)};
 	    	try
@@ -457,8 +458,8 @@ public final class Controller
 		    		LocalDateTime aEDateTime = LocalDateTime.of(aEndDate, aEnd);
 		    		
 		    		if((newAppSDateTime.isAfter(aSDateTime) && newAppSDateTime.isBefore(aEDateTime))
-		    				|| (newAppEDateTime.isAfter(aSDateTime)))
-		    			return "Time Conflict";
+		    				|| (newAppEDateTime.isAfter(aSDateTime) && (newAppSDateTime.isBefore(aEDateTime))))
+		    			timeConflict = true;
 		    		
 	    		}
 	    		
@@ -472,6 +473,7 @@ public final class Controller
 	    		e.printStackTrace();
 	    		return "Account Not Created";
 	    	}
+	    	if(timeConflict) return "Time Conflict";
 	    	return "SUCCESS";
     	}
     	return "You must log in first";
