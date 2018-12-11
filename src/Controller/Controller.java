@@ -59,6 +59,7 @@ public final class Controller
      */
     public static Controller getInstance()
     {
+    	controller = null;
     	if(controller == null)
     	{
     		controller = new Controller();
@@ -666,6 +667,14 @@ public final class Controller
     	try
     	{
     		controller.getAppointmentsDB().changeAppointmentName(id, newName);
+    		for(Appointment a : allAppointmentsList)
+    		{
+    			if(a.getAID() == id)
+    			{
+    				int idx = allAppointmentsList.indexOf(a);
+    				allAppointmentsList.get(idx).setName(newName);
+    			}
+    		}
     		return "SUCCESS";
     	}
     	catch (Exception e)
@@ -680,6 +689,16 @@ public final class Controller
     	try
     	{
     		controller.getAppointmentsDB().changeAppointmentStartDate(id, year, month, day);
+    		for(Appointment a : allAppointmentsList)
+    		{
+    			if(a.getAID() == id)
+    			{
+    				int idx = allAppointmentsList.indexOf(a);
+    				allAppointmentsList.get(idx).setStartYear(year);
+    				allAppointmentsList.get(idx).setStartMonth(month);
+    				allAppointmentsList.get(idx).setStartDay(day);
+    			}
+    		}
     		return "SUCCESS";
     	}
     	catch (Exception e)
@@ -694,6 +713,16 @@ public final class Controller
     	try
     	{
     		controller.getAppointmentsDB().changeAppointmentEndDate(id, year, month, day);
+    		for(Appointment a : allAppointmentsList)
+    		{
+    			if(a.getAID() == id)
+    			{
+    				int idx = allAppointmentsList.indexOf(a);
+    				allAppointmentsList.get(idx).setEndYear(year);
+    				allAppointmentsList.get(idx).setEndMonth(month);
+    				allAppointmentsList.get(idx).setEndDay(day);
+    			}
+    		}
     		return "SUCCESS";
     	}
     	catch (Exception e)
@@ -708,6 +737,14 @@ public final class Controller
     	try
     	{
     		controller.getAppointmentsDB().changeAppointmentStartTime(id, start);
+    		for(Appointment a : allAppointmentsList)
+    		{
+    			if(a.getAID() == id)
+    			{
+    				int idx = allAppointmentsList.indexOf(a);
+    				allAppointmentsList.get(idx).setStart(start);
+    			}
+    		}
     		return "SUCCESS";
     	}
     	catch (Exception e)
@@ -728,6 +765,14 @@ public final class Controller
     	try
     	{
     		controller.getAppointmentsDB().changeAppointmentEndTime(id, end);
+    		for(Appointment a : allAppointmentsList)
+    		{
+    			if(a.getAID() == id)
+    			{
+    				int idx = allAppointmentsList.indexOf(a);
+    				allAppointmentsList.get(idx).setStart(end);
+    			}
+    		}
     		return "SUCCESS";
     	}
     	catch (Exception e)
@@ -803,6 +848,7 @@ public final class Controller
 	{
 		return userAppointmentsDB;
 	}
+	
 	
 	/**
 	 * If currentUser is set, this will get all of the appointments from the db that contain the user's ID

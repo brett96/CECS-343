@@ -36,6 +36,7 @@ public class DBModel
     private void createTable() throws SQLException {
 //    	mStmt.executeUpdate("DROP TABLE IF EXISTS users");	//  Deletes and repopulates the database
 //    	mStmt.executeUpdate("DROP TABLE IF EXISTS appointments");
+//    	mStmt.executeUpdate("DROP TABLE userAppointments");
         StringBuilder createSQL = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         createSQL.append(mTableName).append("(");
         for (int i = 0; i < mFieldNames.length; i++)
@@ -254,6 +255,7 @@ public class DBModel
     	StringBuilder updateSQL = new StringBuilder("UPDATE appointments SET appointmentName = ").append("'" + newName + "'");
     	updateSQL.append(" WHERE aID = ").append(id);
     	mStmt.executeUpdate(updateSQL.toString());
+    	
     }
     
     public void changeAppointmentStartDate(int id, int year, int month, int day) throws SQLException
