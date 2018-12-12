@@ -1,6 +1,8 @@
-"sqlite-jdbc-3.16.1(2).jar" is needed to access the database.  Import it into the project ("Referenced Libraries")
+Drivers:
+  -  "sqlite-jdbc-3.16.1(2).jar" is needed to access the database.  Import it into the project ("Referenced Libraries")
+	- Driver from: https://www.sqlite.org/download.html
 
-Driver from: https://www.sqlite.org/download.html
+  -  "javax.mail.jar" is also needed to send emails.  You must import it into the project
 
 Importing Schedules:
   - Schedule will be imported from the file "import.csv"

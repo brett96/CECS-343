@@ -936,7 +936,7 @@ public final class Controller
 	         message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
 	         // Set Subject: header field
-	         message.setSubject("Test Email");
+	         message.setSubject("Appointment Reminder");
 
 	         // Now set the actual message
 	         message.setText(text);

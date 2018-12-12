@@ -471,12 +471,12 @@ public class CalendarProgram{
         calendarViewBar.add(weekView);
         calendarViewBar.add(dayView);
         
-        JMenuItem colorView = new JMenuItem(new AbstractAction("change calendar color") {
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("color button");
-        	}
-        });
-        calendarViewBar.add(colorView);
+//        JMenuItem colorView = new JMenuItem(new AbstractAction("change calendar color") {
+//        	public void actionPerformed(ActionEvent e) {
+//        		System.out.println("color button");
+//        	}
+//        });
+//        calendarViewBar.add(colorView);
         menubar.add(calendarViewBar);
         
         
